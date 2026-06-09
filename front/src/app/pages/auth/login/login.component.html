@@ -1,0 +1,33 @@
+<div class="form-wrapper">
+  <div class="header">
+    <h2>Inicia sesión</h2>
+  </div>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="input-group">
+      <label>EMAIL</label>
+      <input type="text" formControlName="email" placeholder="Juan">
+      @if(loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
+      <span class="error-msg">El usuario está vacío</span>
+      }
+      @if(loginForm.get('email')?.hasError('minlength') && loginForm.get('email')?.touched) {
+      <span class="error-msg">Mínimo 3 caracteres</span>
+      }
+    </div>
+
+    <div class="input-group">
+      <label>CONTRASEÑA</label>
+      <input type="password" formControlName="password" placeholder="••••••••">
+      @if(loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+      <span class="error-msg">La contraseña está vacía</span>
+      }
+      @if(loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
+      <span class="error-msg">Mínimo 6 caracteres</span>
+      }
+    </div>
+
+    <button type="submit" class="action-btn">
+      INICIA SESIÓN <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+  </form>
+</div>

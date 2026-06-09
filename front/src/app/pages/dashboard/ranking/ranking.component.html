@@ -1,0 +1,64 @@
+<div class="ranking-container">
+
+  <div class="podium-section">
+    <div class="podium">
+      @for (player of getPodiumOrder(); track player.id; let i = $index) {
+      <div class="podium-place" [class]="'place-' + player.position">
+        <div class="medal-icon">
+          @if (player.position === 1) {
+          <ion-icon name="trophy" class="gold"></ion-icon>
+          } @else if (player.position === 2) {
+          <ion-icon name="medal" class="silver"></ion-icon>
+          } @else {
+          <ion-icon name="medal" class="bronze"></ion-icon>
+          }
+        </div>
+
+        <div class="podium-avatar">
+          <img [src]="player.avatar" [alt]="player.username">
+          <span class="position-badge">{{ player.position }}</span>
+        </div>
+        <div class="podium-info">
+          <h3 class="username">{{ player.username }}</h3>
+          <div class="points">
+            <ion-icon name="star"></ion-icon>
+            <span>{{ player.points }}</span>
+          </div>
+        </div>
+
+        <div class="pedestal">
+          <span class="position-number">{{ player.position }}</span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  <div class="players-list">
+    <div class="list-header">
+      <h3>CLASIFICACIÓN COMPLETA</h3>
+    </div>
+
+    <div class="players-table">
+      @for (player of getAllPlayers(); track player.id) {
+      <div class="player-row" [class.highlight-podium]="player.position <= 3">
+
+        <div class="position-cell">
+          <span class="position-number">{{ player.position }}</span>
+        </div>
+
+        <div class="player-info">
+          <img [src]="player.avatar" [alt]="player.username" class="avatar">
+          <span class="username">{{ player.username }}</span>
+        </div>
+
+        <div class="points-cell">
+          <ion-icon name="star"></ion-icon>
+          <span class="points">{{ player.points }}</span>
+        </div>
+
+      </div>
+      }
+    </div>
+  </div>
+
+</div>

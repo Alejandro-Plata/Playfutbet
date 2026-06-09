@@ -1,0 +1,1006 @@
+.team-detail-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* --- LOADING & ERROR STATES --- */
+.loading-state,
+.error-state {
+    text-align: center;
+    padding: 4rem;
+    font-family: 'Kanit';
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.error-state {
+    color: #ef4444;
+}
+
+
+/* --- TEAM HEADER --- */
+.team-header {
+    background: #fff;
+    border: 4px solid #000;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.team-main-info {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex: 1;
+}
+
+.team-logo-large {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 0 rgba(0, 0, 0, 0.15));
+    flex-shrink: 0;
+}
+
+.team-text-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.team-name {
+    font-family: 'Kanit';
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    color: #000;
+    line-height: 1;
+}
+
+.competition-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.2rem;
+    border: 3px solid #000;
+    font-family: 'Kanit';
+    font-weight: 900;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 4px 4px 0 #000;
+    width: fit-content;
+
+    &.champions {
+        background: #90EE90;
+        color: #000;
+    }
+
+    &.europa {
+        background: #87CEEB;
+        color: #000;
+    }
+
+    &.relegation {
+        background: #8B0000;
+        color: #fff;
+    }
+}
+
+.header-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.header-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+}
+
+.header-stat-value {
+    font-family: 'Kanit';
+    font-size: 2rem;
+    font-weight: 900;
+    color: #000;
+    line-height: 1;
+}
+
+.header-stat-label {
+    font-family: 'Kanit';
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.header-stat-divider {
+    width: 2px;
+    height: 40px;
+    background: #ddd;
+}
+
+/* --- STATS SECTION --- */
+.stats-section {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: 'Kanit';
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0 0 1.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    color: #000;
+
+    ion-icon {
+        font-size: 2rem;
+    }
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #fff;
+    border: 3px solid #000;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 6px 6px 0 #000;
+    transition: all 0.2s;
+
+    &:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 #000;
+    }
+}
+
+.stat-icon {
+    width: 70px;
+    height: 70px;
+    border: 3px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 4px 4px 0 #000;
+    background: var(--c-yellow);
+
+    ion-icon {
+        font-size: 2.5rem;
+        color: #000;
+    }
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.stat-label {
+    font-family: 'Kanit';
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #666;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-family: 'Kanit';
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+/* --- RECORD STATS --- */
+.record-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.record-item {
+    background: #fff;
+    border: 4px solid #000;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 6px 6px 0 #000;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+    }
+
+    &:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 #000;
+    }
+
+    &.won::before {
+        background: #4CAF50;
+    }
+
+    &.drawn::before {
+        background: #FF9800;
+    }
+
+    &.lost::before {
+        background: #f44336;
+    }
+
+    &.played::before {
+        background: #2196F3;
+    }
+}
+
+.record-label {
+    font-family: 'Kanit';
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+.record-value {
+    font-family: 'Kanit';
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    display: block;
+
+    .won & {
+        color: #4CAF50;
+    }
+
+    .drawn & {
+        color: #FF9800;
+    }
+
+    .lost & {
+        color: #f44336;
+    }
+
+    .played & {
+        color: #000;
+    }
+}
+
+/* --- PLAYERS SECTION --- */
+.players-section {
+    margin-bottom: 3rem;
+}
+
+.table-wrapper {
+    background: #fff;
+    border: 3px solid #000;
+    box-shadow: 6px 6px 0 #000;
+    overflow-x: auto;
+}
+
+.players-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Kanit';
+
+    thead {
+        background: #000;
+        color: #fff;
+
+        th {
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-right: 1px solid #333;
+
+            &:last-child {
+                border-right: none;
+            }
+
+            &.stat-col {
+                text-align: center;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 2px solid #eee;
+            transition: background 0.2s;
+
+            &:hover {
+                background: #fafafa;
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        td {
+            padding: 1.2rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    }
+}
+
+.player-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.player-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.player-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #000;
+}
+
+.stat-cell {
+    text-align: center;
+
+    &.goals .stat-badge {
+        background: #4CAF50;
+        color: #fff;
+    }
+
+    &.yellow .stat-badge {
+        background: #FFD700;
+        color: #000;
+    }
+
+    &.red .stat-badge {
+        background: #f44336;
+        color: #fff;
+    }
+}
+
+.stat-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border: 2px solid #000;
+    font-weight: 900;
+    font-size: 1rem;
+    min-width: 50px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.empty-players {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    font-family: 'Kanit';
+    font-weight: 600;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .team-detail-container {
+        padding: 1rem;
+    }
+
+    .team-header {
+        padding: 1.5rem;
+    }
+
+    .team-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .team-name {
+        font-size: 2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .record-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .players-table {
+        font-size: 0.8rem;
+
+        thead th,
+        tbody td {
+            padding: 0.8rem;
+        }
+    }
+
+    .player-avatar {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+
+/* --- LOADING & ERROR STATES --- */
+.loading-state,
+.error-state {
+    text-align: center;
+    padding: 4rem;
+    font-family: 'Kanit';
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.error-state {
+    color: #ef4444;
+}
+
+/* --- BACK BUTTON --- */
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    border: 3px solid #000;
+    padding: 0.8rem 1.5rem;
+    font-family: 'Kanit';
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 4px 4px 0 #000;
+    transition: all 0.2s;
+    margin-bottom: 2rem;
+
+    ion-icon {
+        font-size: 1.2rem;
+    }
+
+    &:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #000;
+    }
+
+    &:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #000;
+    }
+}
+
+/* --- TEAM HEADER --- */
+.team-header {
+    border: 4px solid #000;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.team-info {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.team-logo-large {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 0 rgba(0, 0, 0, 0.15));
+}
+
+.team-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.team-name {
+    font-family: 'Kanit';
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    color: #000;
+}
+
+.position-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #000;
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border: 3px solid #000;
+    font-family: 'Kanit';
+    font-weight: 900;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+    width: fit-content;
+
+    ion-icon {
+        font-size: 1.3rem;
+    }
+
+    &.champions {
+        background: #4CAF50;
+        color: #000;
+    }
+
+    &.europa {
+        background: #2196F3;
+        color: #fff;
+    }
+
+    &.relegation {
+        background: #f44336;
+        color: #fff;
+    }
+}
+
+/* --- STATS SECTION --- */
+.stats-section {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: 'Kanit';
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0 0 1.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    color: #000;
+
+    ion-icon {
+        font-size: 2rem;
+    }
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #fff;
+    border: 3px solid #000;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 6px 6px 0 #000;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        transition: height 0.3s ease;
+    }
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 8px 8px 0 #000;
+
+        &::before {
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .stat-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+    }
+
+    &.points::before {
+        background: linear-gradient(135deg, var(--c-yellow) 0%, #ffed4e 100%);
+    }
+
+    &.position::before {
+        background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+    }
+
+    &.winrate::before {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    }
+
+    &.goals-for::before {
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    }
+
+    &.goals-against::before {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    }
+
+    &.goal-diff.positive::before {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    }
+
+    &.goal-diff.negative::before {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    }
+}
+
+.stat-icon {
+    width: 70px;
+    height: 70px;
+    border: 3px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 4px 4px 0 #000;
+    transition: all 0.3s ease;
+
+    ion-icon {
+        font-size: 2.5rem;
+        color: #000;
+    }
+
+    .points & {
+        background: linear-gradient(135deg, var(--c-yellow) 0%, #ffed4e 100%);
+    }
+
+    .position & {
+        background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+
+        ion-icon {
+            color: #fff;
+        }
+    }
+
+    .winrate & {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+
+        ion-icon {
+            color: #fff;
+        }
+    }
+
+    .goals-for & {
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+
+        ion-icon {
+            color: #fff;
+        }
+    }
+
+    .goals-against & {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+
+        ion-icon {
+            color: #fff;
+        }
+    }
+
+    .goal-diff.positive & {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+
+        ion-icon {
+            color: #fff;
+        }
+    }
+
+    .goal-diff.negative & {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+
+        ion-icon {
+            color: #fff;
+        }
+    }
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.stat-label {
+    font-family: 'Kanit';
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #666;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-family: 'Kanit';
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+/* --- RECORD STATS --- */
+.record-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    background: #fff;
+    border: 3px solid #000;
+    padding: 1.5rem;
+    box-shadow: 6px 6px 0 #000;
+}
+
+.record-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 2px solid #000;
+    background: #fafafa;
+}
+
+.record-label {
+    font-family: 'Kanit';
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.record-value {
+    font-family: 'Kanit';
+    font-size: 2rem;
+    font-weight: 900;
+    color: #000;
+}
+
+.record-item.won {
+    border-color: #4CAF50;
+
+    .record-value {
+        color: #4CAF50;
+    }
+}
+
+.record-item.drawn {
+    border-color: #FF9800;
+
+    .record-value {
+        color: #FF9800;
+    }
+}
+
+.record-item.lost {
+    border-color: #f44336;
+
+    .record-value {
+        color: #f44336;
+    }
+}
+
+.record-item.played {
+    border-color: #2196F3;
+
+    .record-value {
+        color: #2196F3;
+    }
+}
+
+/* --- PLAYERS SECTION --- */
+.players-section {
+    margin-bottom: 3rem;
+}
+
+.table-wrapper {
+    background: #fff;
+    border: 3px solid #000;
+    box-shadow: 6px 6px 0 #000;
+    overflow-x: auto;
+}
+
+.players-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Kanit';
+
+    thead {
+        background: #000;
+        color: #fff;
+
+        th {
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-right: 1px solid #333;
+
+            &:last-child {
+                border-right: none;
+            }
+
+            &.stat-col {
+                text-align: center;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 2px solid #eee;
+            transition: background 0.2s;
+
+            &:hover {
+                background: #fafafa;
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        td {
+            padding: 1.2rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    }
+}
+
+.player-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.player-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.player-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #000;
+}
+
+.stat-cell {
+    text-align: center;
+
+    &.goals .stat-badge {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        color: #fff;
+    }
+
+    &.yellow .stat-badge {
+        background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
+        color: #000;
+    }
+
+    &.red .stat-badge {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+        color: #fff;
+    }
+}
+
+.stat-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border: 2px solid #000;
+    font-weight: 900;
+    font-size: 1rem;
+    min-width: 50px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.empty-players {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    font-family: 'Kanit';
+    font-weight: 600;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .team-detail-container {
+        padding: 1rem;
+    }
+
+    .team-header {
+        padding: 1.5rem;
+    }
+
+    .team-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .team-name {
+        font-size: 2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .record-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .players-table {
+        font-size: 0.8rem;
+
+        thead th,
+        tbody td {
+            padding: 0.8rem;
+        }
+    }
+
+    .player-avatar {
+        width: 35px;
+        height: 35px;
+    }
+}

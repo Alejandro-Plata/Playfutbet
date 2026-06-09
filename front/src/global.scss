@@ -1,0 +1,176 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import '@ionic/angular/css/palettes/dark.system.css';
+
+@import 'theme/variables'; // Aquí también si usas variables
+
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,600;0,800;1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap');
+
+
+:root {
+  --ion-font-family: 'Kanit', sans-serif;
+  --font-tech: 'JetBrains Mono', monospace;
+  /* Para datos y etiquetas */
+  --c-neon: #00ff00;
+  --c-dark: #052e05;
+  --c-yellow: #fff200;
+  --c-grey-light: #f2f2f2;
+  /* Brutalist Theme */
+  --c-black: #000;
+  --c-white: #fff;
+  --c-border: 3px solid #000;
+  --shadow-hard: 6px 6px 0 #000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Standard Ionic Reset */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Ionic handles scrolling internally */
+}
+
+ion-app {
+  height: 100%;
+  overflow: hidden;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+/* Ensure router outlet takes full space */
+ion-router-outlet {
+  height: 100%;
+}
+
+/* Animación del Balón Compartida */
+@keyframes kickBall {
+  0% {
+    opacity: 0;
+    transform: translate(-300px, 300px) scale(0.5) rotate(-180deg);
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+}
+
+/* Clases utilitarias compartidas */
+.error-msg {
+  color: #ff3b30;
+  font-size: 0.75rem;
+  display: block;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+.action-btn {
+  background-color: var(--c-yellow);
+  color: #000;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 5px 5px 0px #000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2rem;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0px #000;
+  }
+
+  &.full-width {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+input {
+  background: transparent;
+  font-family: 'Kanit', sans-serif;
+  transition: all 0.3s ease;
+  border-radius: 0;
+}
+
+
+
+.tactical-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-color: var(--c-black);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  /* Rejilla de datos */
+
+  /* Círculo de luz ambiental (como un foco de estadio) */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(204, 255, 0, 0.15) 0%, transparent 60%);
+    filter: blur(80px);
+  }
+}

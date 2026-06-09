@@ -1,0 +1,122 @@
+<div class="history-container">
+
+  <header class="history-header">
+    <div class="title-group">
+      <h1>HISTORIAL DE APUESTAS</h1>
+      <p class="subtitle">Tus predicciones y estadísticas</p>
+    </div>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card points">
+      <div class="stat-icon">
+        <ion-icon name="trophy"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">PUNTOS TOTALES</span>
+        <span class="stat-value">{{ userStats.totalPoints }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card winrate">
+      <div class="stat-icon">
+        <ion-icon name="trending-up"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">WIN RATE</span>
+        <span class="stat-value">{{ userStats.winRate }}%</span>
+      </div>
+    </div>
+
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <ion-icon name="football"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">TOTAL PORRAS</span>
+        <span class="stat-value">{{ userStats.totalBets }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="predictions-section">
+    <h2 class="section-title">ÚLTIMAS PREDICCIONES</h2>
+
+    <div class="predictions-list">
+      @for (prediction of predictions; track prediction.id) {
+      <div class="prediction-card" [class]="'status-' + prediction.status">
+
+        <div class="status-badge">
+          @if (prediction.status === 'correct') {
+          <ion-icon name="checkmark-circle" class="icon-correct"></ion-icon>
+          } @else if (prediction.status === 'incorrect') {
+          <ion-icon name="close-circle" class="icon-incorrect"></ion-icon>
+          } @else {
+          <ion-icon name="time-outline" class="icon-pending"></ion-icon>
+          }
+        </div>
+
+        <div class="match-info">
+          <div class="league-date">
+            <span class="league">{{ prediction.league }}</span>
+            <span class="dot">•</span>
+            <span class="date">{{ prediction.date }}</span>
+          </div>
+
+          <div class="teams">
+            <div class="team">
+              <img [src]="prediction.homeTeamLogo" [alt]="prediction.homeTeam" class="team-logo"
+                (click)="navigateToTeam(prediction.homeTeam)" style="cursor: pointer;">
+              <span class="team-name">{{ prediction.homeTeam }}</span>
+            </div>
+
+            <div class="vs">VS</div>
+
+            <div class="team">
+              <img [src]="prediction.awayTeamLogo" [alt]="prediction.awayTeam" class="team-logo"
+                (click)="navigateToTeam(prediction.awayTeam)" style="cursor: pointer;">
+              <span class="team-name">{{ prediction.awayTeam }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scores">
+          <div class="score-box predicted">
+            <span class="score-label">TU PREDICCIÓN</span>
+            <span class="score-value">{{ prediction.predictedScore.home }} - {{ prediction.predictedScore.away }}</span>
+          </div>
+
+          @if (prediction.actualScore) {
+          <div class="score-box actual">
+            <span class="score-label">RESULTADO</span>
+            <span class="score-value">{{ prediction.actualScore.home }} - {{ prediction.actualScore.away }}</span>
+          </div>
+          } @else {
+          <div class="score-box pending">
+            <span class="score-label">RESULTADO</span>
+            <span class="score-value">PENDIENTE</span>
+          </div>
+          }
+        </div>
+
+        <div class="points-earned" [class.positive]="prediction.pointsEarned > 0"
+          [class.negative]="prediction.pointsEarned < 0">
+          @if (prediction.pointsEarned > 0) {
+          <span class="points-value">+{{ prediction.pointsEarned }}</span>
+          } @else if (prediction.pointsEarned < 0) { <span class="points-value">{{ prediction.pointsEarned }}</span>
+            } @else {
+            <span class="points-value">—</span>
+            }
+            <span class="points-label">PTS</span>
+        </div>
+
+      </div>
+      } @empty {
+      <div class="empty-state">
+        <p>No tienes predicciones todavía.</p>
+      </div>
+      }
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,36 @@
+<ion-content [fullscreen]="true" class="no-scroll">
+  <div class="split-layout">
+
+    <div class="panel left-panel">
+      <div class="brand-content">
+        <h1>PLAY<br><span class="highlight">FUT</span><br>BET<span class="not-highlight">-TER</span></h1>
+        <p class="subtitle">LA PLATAFORMA DE VANGUARDIA PARA EL ANÁLISIS DEPORTIVO.</p>
+
+        <div class="stats-row">
+          <div class="stat">
+            <span class="label">CUOTA ACTUAL</span>
+            <span class="value green">2.45 ▲</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel right-panel">
+
+      <div class="top-nav">
+        <span routerLink="/login" routerLinkActive="active" class="nav-tab">LOGIN</span>
+        <span routerLink="/register" routerLinkActive="active" class="nav-tab">REGISTRO</span>
+      </div>
+
+      <div class="ball-container" [class.kick-in]="animate">
+        <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" alt="Balón">
+      </div>
+      <div class="auth-content">
+        <router-outlet></router-outlet>
+      </div>
+
+    </div>
+
+    <app-notifications></app-notifications>
+  </div>
+</ion-content>

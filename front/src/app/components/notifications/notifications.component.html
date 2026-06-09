@@ -1,0 +1,8 @@
+<div class="toast-container">
+  @for (alert of alerts; track $index) {
+  <div class="toast" [class]="alert.type">
+    <ion-icon [name]="alert.icon"></ion-icon>
+    <div class="toast-message">{{ alert.message }}</div>
+  </div>
+  }
+</div>

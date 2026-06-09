@@ -1,0 +1,72 @@
+$gold: #bfa12f;
+$gold-dim: #f3f0e0; // Fondo muy suave para elementos activos
+$gold-glow: rgba(191, 161, 47, 0.15);
+
+// Fondos
+$obsidian: #f8f9fa; // Fondo general: Gris muy muy claro (casi blanco)
+$panel-bg: #ffffff; // Paneles y Sidebar: Blanco puro
+$card-bg: #ffffff; // Tarjetas: Blanco puro
+$card-border: #e2e8f0; // Borde sutil gris azulado
+
+// Textos
+$text-light: #1a202c; // Color principal: Gris oscuro (casi negro)
+$text-muted: #718096; // Color secundario: Gris medio
+
+// Tipografías
+$font-serif: 'Playfair Display', serif;
+$font-sans: 'Inter', sans-serif;
+
+:root {
+    /* Fondo general gris muy suave */
+    --ion-background-color: #f4f6f8;
+
+    /* Color de acento (Acción/Apostar) - Un verde eléctrico pero serio */
+    --ion-color-primary: #00c853;
+    --ion-color-primary-rgb: 0, 200, 83;
+    --ion-color-primary-contrast: #ffffff;
+
+    /* Color para textos y títulos */
+    --ion-color-dark: #1a202c;
+
+    /* Radio de borde global "ligeramente redondeado" */
+    --app-radius: 12px;
+
+    /* Sombra suave para las cards */
+    --app-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Ajustes globales de Ionic para inputs */
+ion-input.custom-input {
+    --background: #ffffff;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --border-radius: var(--app-radius);
+    --border-width: 1px;
+    --border-color: #e2e8f0;
+    --border-style: solid;
+    margin-bottom: 16px;
+
+    /* Estado de foco */
+    &.ion-focused {
+        --border-color: var(--ion-color-primary);
+    }
+
+    /* Estado de error */
+    &.ion-invalid.ion-touched {
+        --border-color: var(--ion-color-danger);
+    }
+}
+
+/* Global team logo hover effect */
+.team-logo-hover {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+:root {
+    --c-yellow: #FFD60A;
+}

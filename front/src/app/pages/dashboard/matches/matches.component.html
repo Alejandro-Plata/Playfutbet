@@ -1,0 +1,104 @@
+<div class="dashboard-container">
+
+    <div class="filters-bar">
+        <!-- JORNADA NAVIGATION -->
+        <div class="matchday-nav">
+            <button class="nav-btn" (click)="prevJornada()" [disabled]="currentJornada === 1">
+                <ion-icon name="chevron-back"></ion-icon>
+            </button>
+
+            <h3>JORNADA {{ currentJornada }}</h3>
+
+            <button class="nav-btn" (click)="nextJornada()" [disabled]="currentJornada === maxJornada">
+                <ion-icon name="chevron-forward"></ion-icon>
+            </button>
+        </div>
+
+        <div class="filter-buttons">
+            <button [class.active]="filterStatus === 'ALL'" (click)="setFilterStatus('ALL')">TODOS</button>
+            <button [class.active]="filterStatus === 'LIVE'" (click)="setFilterStatus('LIVE')" class="live-filter">
+                <span class="blink">●</span> EN VIVO
+            </button>
+            <button [class.active]="filterStatus === 'UPCOMING'" (click)="setFilterStatus('UPCOMING')">PRÓXIMOS</button>
+            <button [class.active]="filterStatus === 'FINISHED'"
+                (click)="setFilterStatus('FINISHED')">FINALIZADOS</button>
+        </div>
+
+        <div class="search-local">
+            <input type="text" [(ngModel)]="searchTerm" placeholder="Filtrar por equipo...">
+        </div>
+    </div>
+
+    <div class="cards-grid">
+        @for (match of filteredMatches(); track match.id) {
+
+        <div class="match-card" [class.finished]="match.status === 'FINISHED'">
+
+            <div class="card-top">
+                <span class="league-tag">{{ match.league }}</span>
+                @if (match.status === 'LIVE') {
+                <span class="status-badge live">
+                    <span class="blink">●</span> {{ match.matchTime }}
+                </span>
+                } @else if (match.status === 'UPCOMING') {
+                <span class="status-badge upcoming">
+                    {{ match.dateTime | date:'HH:mm' }}
+                </span>
+                } @else {
+                <span class="status-badge finished">FT</span>
+                }
+            </div>
+
+            <div class="card-body">
+                <div class="team home">
+                    <img [src]="match.homeLogo" [alt]="match.homeTeam" (click)="navigateToTeam(match.homeTeam)"
+                        style="cursor: pointer;">
+                    <span class="team-name">{{ match.homeTeam }}</span>
+                </div>
+
+                <div class="score-board">
+                    @if (match.status !== 'UPCOMING') {
+                    <span class="score">{{ match.score?.home }}</span>
+                    <span class="divider">-</span>
+                    <span class="score">{{ match.score?.away }}</span>
+                    } @else {
+                    <span class="vs">VS</span>
+                    }
+                </div>
+
+                <div class="team away">
+                    <img [src]="match.awayLogo" [alt]="match.awayTeam" (click)="navigateToTeam(match.awayTeam)"
+                        style="cursor: pointer;">
+                    <span class="team-name">{{ match.awayTeam }}</span>
+                </div>
+            </div>
+
+            @if (match.status === 'UPCOMING') {
+            <div class="match-date">
+                <ion-icon name="calendar-outline"></ion-icon>
+                {{ match.dateTime | date:'d MMM yyyy' }}
+            </div>
+            }
+
+            <div class="card-actions">
+                @if(match.status === 'UPCOMING') {
+                <button class="btn-bet" [routerLink]="['/dashboard/match', match.id]" [queryParams]="{ action: 'bet' }">
+                    APOSTAR <ion-icon name="chevron-forward"></ion-icon>
+                </button>
+                } @else {
+                <button class="btn-details" [routerLink]="['/dashboard/match', match.id]">
+                    DETALLES
+                </button>
+                }
+
+            </div>
+
+        </div>
+        } @empty {
+        <div class="no-results">
+            <p>No hay partidos en esta jornada que coincidan con la búsqueda.</p>
+        </div>
+        }
+    </div>
+
+</div>

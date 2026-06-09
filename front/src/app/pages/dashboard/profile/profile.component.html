@@ -1,0 +1,47 @@
+<div class="profile-container">
+
+  @if (isLoading) {
+  <div class="loading-state">
+    <p>Cargando perfil...</p>
+  </div>
+  }
+
+  @if (!isLoading && userProfile) {
+  <div class="profile-card">
+    <div class="avatar-section">
+      <div class="avatar-wrapper">
+        <img [src]="userProfile.avatar" [alt]="userProfile.name" class="user-avatar">
+        @if (userProfile.rank > 0) {
+        <div class="rank-badge">
+          <ion-icon name="trophy"></ion-icon>
+          #{{ userProfile.rank }}
+        </div>
+        }
+      </div>
+      <h2 class="user-name">{{ userProfile.name }}</h2>
+    </div>
+
+    <div class="points-section">
+      <div class="points-card">
+        <ion-icon name="star"></ion-icon>
+        <div class="points-info">
+          <span class="points-label">PUNTOS TOTALES</span>
+          <span class="points-value">{{ userProfile.points }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">APUESTAS</span>
+        <span class="stat-value">{{ userProfile.totalBets }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">ACIERTOS</span>
+        <span class="stat-value">{{ (userProfile.winRate * 100).toFixed(1) }}%</span>
+      </div>
+    </div>
+  </div>
+  }
+
+</div>

@@ -1,0 +1,136 @@
+<div class="classification-container">
+
+  <div class="table-section">
+    <div class="table-header">
+      <h3>CLASIFICACIÓN</h3>
+      <div class="sort-buttons">
+        <button [class.active]="sortBy === 'position'" (click)="setSortBy('position')">POSICIÓN</button>
+        <button [class.active]="sortBy === 'won'" (click)="setSortBy('won')">GANADOS</button>
+        <button [class.active]="sortBy === 'drawn'" (click)="setSortBy('drawn')">EMPATES</button>
+        <button [class.active]="sortBy === 'lost'" (click)="setSortBy('lost')">PERDIDOS</button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="standings-table">
+        <thead>
+          <tr>
+            <th>POS</th>
+            <th>EQUIPO</th>
+            <th>PJ</th>
+            <th>G</th>
+            <th>E</th>
+            <th>P</th>
+            <th>GF</th>
+            <th>GC</th>
+            <th>DG</th>
+            <th>PTS</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (team of standings; track team.position) {
+          <tr [class]="getPositionClass(team.position)" (click)="navigateToTeam(team.team)" style="cursor: pointer;">
+            <td class="position">
+              <span class="position-badge">{{ team.position }}</span>
+            </td>
+            <td class="team-cell">
+              <img [src]="team.logo" [alt]="team.team" class="team-logo">
+              <span class="team-name">{{ team.team }}</span>
+            </td>
+            <td>{{ team.played }}</td>
+            <td class="highlight-won">{{ team.won }}</td>
+            <td class="highlight-drawn">{{ team.drawn }}</td>
+            <td class="highlight-lost">{{ team.lost }}</td>
+            <td>{{ team.goalsFor }}</td>
+            <td>{{ team.goalsAgainst }}</td>
+            <td [class.positive]="team.goalDifference > 0" [class.negative]="team.goalDifference < 0">
+              {{ team.goalDifference > 0 ? '+' : '' }}{{ team.goalDifference }}
+            </td>
+            <td class="points"><span class="pts-badge">{{ team.points }}</span></td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <span class="color-box champions"></span>
+        <span>Champions League</span>
+      </div>
+      <div class="legend-item">
+        <span class="color-box europa"></span>
+        <span>Europa League</span>
+      </div>
+      <div class="legend-item">
+        <span class="color-box relegation"></span>
+        <span>Descenso</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="matchday-section">
+    <div class="matchday-header">
+      <button class="nav-btn" (click)="prevMatchday()" [disabled]="currentMatchday === 1">
+        <ion-icon name="chevron-back"></ion-icon>
+      </button>
+
+      <h3>JORNADA {{ currentMatchday }}</h3>
+
+      <button class="nav-btn" (click)="nextMatchday()" [disabled]="currentMatchday === maxMatchday">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+    </div>
+
+    <div class="matches-grid">
+      @for (match of matchdayMatches; track match.id) {
+      <div class="match-card" [class.live]="match.status === 'LIVE'">
+
+        <div class="match-date">
+          @if (match.status === 'LIVE') {
+          <span class="live-badge">
+            <span class="blink">●</span> EN VIVO
+          </span>
+          } @else if (match.status === 'UPCOMING') {
+          <span class="upcoming-badge">
+            {{ match.date | date:'d MMM, HH:mm' }}
+          </span>
+          } @else {
+          <span class="finished-badge">
+            {{ match.date | date:'d MMM yyyy' }}
+          </span>
+          }
+        </div>
+
+        <div class="match-body">
+          <div class="team home">
+            <img [src]="match.homeLogo" [alt]="match.homeTeam" (click)="navigateToTeam(match.homeTeam)"
+              style="cursor: pointer;">
+            <span class="team-name">{{ match.homeTeam }}</span>
+          </div>
+
+          <div class="score-section">
+            @if (match.status !== 'UPCOMING') {
+            <div class="score">
+              <span class="score-number">{{ match.homeScore }}</span>
+              <span class="divider">-</span>
+              <span class="score-number">{{ match.awayScore }}</span>
+            </div>
+            } @else {
+            <div class="vs">VS</div>
+            }
+          </div>
+
+          <div class="team away">
+            <img [src]="match.awayLogo" [alt]="match.awayTeam" (click)="navigateToTeam(match.awayTeam)"
+              style="cursor: pointer;">
+            <span class="team-name">{{ match.awayTeam }}</span>
+          </div>
+        </div>
+
+      </div>
+      }
+    </div>
+  </div>
+
+</div>

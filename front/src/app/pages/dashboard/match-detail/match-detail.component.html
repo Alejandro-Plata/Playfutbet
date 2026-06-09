@@ -1,0 +1,207 @@
+<div class="detail-container">
+
+   <main class="main-content">
+
+      @if (isLoading) {
+      <div class="loading-state">
+         <p>Cargando partido...</p>
+      </div>
+      } @else if (match) {
+
+      <div class="hero-card">
+         <div class="league-header">
+            <span class="league-name">{{ match.league }}</span>
+            <span class="dot">•</span>
+            <span class="round">JORNADA {{ match.jornada }}</span>
+         </div>
+
+         <div class="score-row">
+            <div class="team home">
+               <span class="role-badge local">LOCAL</span>
+               <div class="logo-wrapper">
+                  <img [src]="getTeamLogo(match.home)" [alt]="match.home" class="big-logo"
+                     (click)="navigateToTeam(match.home)" style="cursor: pointer;">
+               </div>
+               <h2>{{ match.home }}</h2>
+            </div>
+
+            <div class="result-box">
+               @if (match.status === 'pending') {
+               <span class="vs">VS</span>
+               <div class="date-badge">{{ match.time | date:'dd/MM/yyyy HH:mm' }}</div>
+               } @else {
+               <div class="the-score">
+                  {{ match.homeScore }} - {{ match.awayScore }}
+               </div>
+               <div class="match-status" [class.live]="match.status === 'live'">
+                  @if (match.status === 'live') {
+                  <span class="blink">●</span> EN VIVO {{ matchTime }}
+                  } @else {
+                  FINALIZADO
+                  }
+               </div>
+               }
+            </div>
+
+            <div class="team away">
+               <span class="role-badge visitor">VISITANTE</span>
+               <div class="logo-wrapper">
+                  <img [src]="getTeamLogo(match.away)" [alt]="match.away" class="big-logo"
+                     (click)="navigateToTeam(match.away)" style="cursor: pointer;">
+               </div>
+               <h2>{{ match.away }}</h2>
+            </div>
+         </div>
+
+         @if (match.status !== 'pending' && match.events && match.events.length > 0) {
+         <div class="scorers-strip">
+            <h3 class="goals-title">
+               <ion-icon name="football"></ion-icon>
+               EVENTOS DEL PARTIDO
+            </h3>
+            <div class="goals-list">
+               @for (event of match.events; track $index) {
+               @if (event.type === 'goal') {
+               <div class="goal-item" [class.away]="event.team === match.away">
+                  <span class="min">{{ event.minute }}'</span>
+                  <span class="ball">⚽</span>
+                  <span class="name">{{ event.player }}</span>
+               </div>
+               } @else if (event.type === 'card') {
+               <div class="goal-item" [class.away]="event.team === match.away">
+                  <span class="min">{{ event.minute }}'</span>
+                  <span class="card-icon" [class.yellow]="event.cardType === 'yellow'"
+                     [class.red]="event.cardType === 'red'"></span>
+                  <span class="name">{{ event.player }}</span>
+               </div>
+               }
+               }
+            </div>
+         </div>
+         }
+      </div>
+
+      @if(match.status === 'pending') {
+      <app-bet-match id="betting-section" [homeTeam]="{ name: match.home, logoUrl: getTeamLogo(match.home) }"
+         [awayTeam]="{ name: match.away, logoUrl: getTeamLogo(match.away) }" [matchId]="match.id">
+      </app-bet-match>
+      }
+
+      <div class="standings-panel">
+         <h3>
+            <ion-icon name="stats-chart"></ion-icon>
+            CLASIFICACIÓN - {{ match.league }}
+         </h3>
+
+         <div class="table-responsive">
+            <table class="standings-table">
+               <thead>
+                  <tr>
+                     <th class="pos-col">#</th>
+                     <th class="team-col">EQUIPO</th>
+                     <th class="stat-col" title="Partidos Jugados">PJ</th>
+                     <th class="stat-col" title="Ganados">G</th>
+                     <th class="stat-col" title="Empatados">E</th>
+                     <th class="stat-col" title="Perdidos">P</th>
+                     <th class="stat-col" title="Goles a Favor">GF</th>
+                     <th class="stat-col" title="Goles en Contra">GC</th>
+                     <th class="stat-col diff-col" title="Diferencia de Goles">GDif</th>
+                     <th class="pts-col" title="Puntos">PTS</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  @for (row of standings; track row.team) {
+                  <tr [class.highlight]="row.team === match.home || row.team === match.away"
+                     [class.highlight-home]="row.team === match.home" [class.highlight-away]="row.team === match.away"
+                     [class.champions]="row.pos <= 4" [class.europa]="row.pos > 4 && row.pos <= 6"
+                     [class.relegation]="row.pos >= 18" (click)="navigateToTeam(row.team)" style="cursor: pointer;">
+                     <td class="pos">{{ row.pos }}</td>
+                     <td class="team-cell">
+                        <img [src]="getTeamLogo(row.team)" [alt]="row.team" class="team-logo-small">
+                        {{ row.team }}
+                        @if (row.team === match.home) {
+                        <span class="role-badge local-table">LOCAL</span>
+                        }
+                        @if (row.team === match.away) {
+                        <span class="role-badge visitor-table">VISITANTE</span>
+                        }
+                     </td>
+                     <td class="stat">{{ row.played }}</td>
+                     <td class="stat">{{ row.won }}</td>
+                     <td class="stat">{{ row.drawn }}</td>
+                     <td class="stat">{{ row.lost }}</td>
+                     <td class="stat gf">{{ row.gf }}</td>
+                     <td class="stat gc">{{ row.gc }}</td>
+                     <td class="stat diff">{{ row.gf - row.gc }}</td>
+                     <td class="pts-col"><span class="pts-badge">{{ row.pts }}</span></td>
+                  </tr>
+                  }
+               </tbody>
+            </table>
+         </div>
+      </div>
+
+      } @else {
+      <div class="error-container">
+         <div class="error-card">
+            <div class="icon-wrapper">
+               <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+            </div>
+            <h2 class="error-title">¡UPS! ALGO SALIÓ MAL</h2>
+            <p class="error-message">No pudimos cargar la información del partido. <br> Inténtalo de nuevo más tarde o
+               vuelve al panel.</p>
+            <button class="error-btn" (click)="goBack()">
+               <ion-icon name="arrow-back"></ion-icon>
+               VOLVER AL HISTORIAL
+            </button>
+         </div>
+      </div>
+      }
+
+   </main>
+
+   <!-- LIVE CHAT SIDEBAR -->
+   <aside class="chat-sidebar" [class.open]="isChatOpen">
+      <!-- MOBILE TOGGLE BUTTON -->
+      <button class="chat-toggle-btn" (click)="toggleChat()">
+         <ion-icon [name]="isChatOpen ? 'close' : 'chatbubbles'"></ion-icon>
+      </button>
+
+      <div class="chat-header">
+         <h3>CHAT EN VIVO</h3>
+         <div class="viewer-count">
+         </div>
+      </div><!-- Chat Messages Stream Container -->
+      <div class="chat-body-wrapper">
+         <div class="chat-stream" #chatStream>
+            @for (msg of chatMessages; track msg.id) {
+            <div class="chat-message" [class.my-message]="msg.isMe">
+               <div class="message-header">
+                  <img [src]="msg.avatar" [alt]="msg.user" class="user-avatar">
+                  <span class="username">{{ msg.user }}</span>
+               </div>
+               <div class="message-body">
+                  {{ msg.text }}
+               </div>
+            </div>
+            }
+         </div>
+
+         @if (showScrollButton) {
+         <button class="scroll-to-bottom" (click)="scrollToBottom()">
+            <ion-icon name="arrow-down"></ion-icon>
+         </button>
+         }
+      </div>
+
+      <!-- Chat Input -->
+      <div class="chat-input-wrapper">
+         <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Escribe un mensaje..."
+            maxlength="200">
+         <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim()">
+            <ion-icon name="send"></ion-icon>
+         </button>
+      </div>
+   </aside>
+
+</div>

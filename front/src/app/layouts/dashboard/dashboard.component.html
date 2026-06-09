@@ -1,0 +1,52 @@
+<div class="layout-wrapper">
+
+  <aside class="sidebar">
+    <div class="user-profile">
+      <div class="avatar-frame">
+        <img [src]="getUserAvatar()" [alt]="getUserName()">
+      </div>
+      <div class="user-info">
+        <span class="username">{{ getUserName() }}</span>
+      </div>
+    </div>
+
+    <nav class="nav-menu">
+      <a routerLink="/dashboard/panel" routerLinkActive="active" class="nav-item">
+        <ion-icon name="grid"></ion-icon> <span>PANEL</span>
+      </a>
+      <a routerLink="/dashboard/historial" routerLinkActive="active" class="nav-item">
+        <ion-icon name="football"></ion-icon> <span>PARTIDOS</span>
+      </a>
+      <a routerLink="/dashboard/classification" routerLinkActive="active" class="nav-item">
+        <ion-icon name="trophy"></ion-icon> <span>CLASIFICACIÓN</span>
+      </a>
+      <a routerLink="/dashboard/ranking" routerLinkActive="active" class="nav-item">
+        <ion-icon name="bar-chart"></ion-icon> <span>RANKING</span>
+      </a>
+      <a routerLink="/dashboard/profile" routerLinkActive="active" class="nav-item">
+        <ion-icon name="person"></ion-icon> <span>PERFIL</span>
+      </a>
+    </nav>
+
+    <div class="logout-section">
+      <button class="logout-btn" (click)="logout()">
+        <ion-icon name="log-out"></ion-icon> CERRAR SESIÓN
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-title">
+        <h1>{{ pageTitle }}</h1>
+        <span class="breadcrumb"> / INICIO</span>
+      </div>
+      <app-notifications></app-notifications>
+    </header>
+
+    <div class="content-scroll">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+</div>

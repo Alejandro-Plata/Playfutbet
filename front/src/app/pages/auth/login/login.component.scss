@@ -1,0 +1,132 @@
+:host {
+  display: block;
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  border: var(--c-border);
+  padding: 2.5rem;
+  box-shadow: 10px 10px 0 #000;
+  background: #fff;
+}
+
+.header {
+  margin-bottom: 2rem;
+  border-bottom: 3px solid #000;
+  padding-bottom: 1rem;
+}
+
+h2 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin: 0;
+  color: var(--c-black);
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.input-group {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--c-black);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+input {
+  width: 100%;
+  border: 2px solid #000;
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  outline: none;
+  font-family: 'Kanit', sans-serif;
+  font-weight: 500;
+  background: #f8f8f8;
+  transition: all 0.2s ease;
+
+  &:focus {
+    background: #fff;
+    box-shadow: 4px 4px 0 #000;
+    transform: translate(-2px, -2px);
+  }
+
+  &.ng-invalid.ng-touched {
+    border-color: #ff3b30;
+    background: #fff5f5;
+  }
+}
+
+.error-msg {
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff3b30;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  &::before {
+    content: '!';
+    background: #ff3b30;
+    color: #fff;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+  }
+}
+
+.action-btn {
+  width: 100%;
+  background: var(--c-yellow);
+  border: 3px solid #000;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  box-shadow: 5px 5px 0px #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: transform 0.1s;
+  text-transform: uppercase;
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0px #000;
+  }
+
+  &:active {
+    transform: translate(0, 0);
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  ion-icon {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .form-wrapper {
+    box-shadow: 6px 6px 0 #000;
+    padding: 1.5rem;
+  }
+}

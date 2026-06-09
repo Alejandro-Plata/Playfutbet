@@ -1,0 +1,531 @@
+@import '../../../../theme/variables.scss';
+
+.history-container {
+  margin-left: 240px;
+  padding: 2.5rem;
+  background-color: $obsidian;
+  min-height: calc(100vh - 70px);
+}
+
+/* --- HEADER --- */
+.history-header {
+  margin-bottom: 3rem;
+
+  .title-group {
+    h1 {
+      font-family: 'Kanit';
+      color: $text-light;
+      margin: 0 0 0.5rem 0;
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-family: 'Kanit';
+      color: $text-muted;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+}
+
+/* --- STATS GRID --- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: #fff;
+  border: 3px solid #000;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 6px 6px 0 #000;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    transition: height 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 8px 8px 0 #000;
+
+    &::before {
+      height: 100%;
+      opacity: 0.1;
+    }
+
+    .stat-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+  }
+
+  &.points {
+    &::before {
+      background: linear-gradient(135deg, $gold 0%, #ffed4e 100%);
+    }
+
+    .stat-icon {
+      background: linear-gradient(135deg, $gold 0%, #ffed4e 100%);
+
+      ion-icon {
+        color: #000;
+      }
+    }
+  }
+
+  &.winrate {
+    &::before {
+      background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    }
+
+    .stat-icon {
+      background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+
+      ion-icon {
+        color: #fff;
+      }
+    }
+  }
+
+  &.total {
+    &::before {
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    }
+
+    .stat-icon {
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+
+      ion-icon {
+        color: #fff;
+      }
+    }
+  }
+}
+
+.stat-icon {
+  width: 70px;
+  height: 70px;
+  border: 3px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 4px 4px 0 #000;
+  transition: all 0.3s ease;
+
+  ion-icon {
+    font-size: 2.5rem;
+  }
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+
+  .stat-label {
+    font-family: 'Kanit';
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #666;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-family: 'Kanit';
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #000;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+}
+
+/* --- PREDICTIONS SECTION --- */
+.predictions-section {
+  h2 {
+    font-family: 'Kanit';
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0 0 2rem 0;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    ion-icon {
+      font-size: 2rem;
+    }
+  }
+}
+
+.predictions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.prediction-card {
+  background: #fff;
+  border: 3px solid #000;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 1.5rem;
+  align-items: center;
+  box-shadow: 6px 6px 0 #000;
+  transition: all 0.2s;
+  position: relative;
+  margin-bottom: 1.5rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+  }
+
+  &.status-correct::before {
+    background: #10b981;
+  }
+
+  &.status-incorrect::before {
+    background: #ef4444;
+  }
+
+  &.status-pending::before {
+    background: #f59e0b;
+  }
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 #000;
+  }
+}
+
+.prediction-badge {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #000;
+  font-family: 'Kanit';
+  font-weight: 900;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+
+  &.correct {
+    background: #10b981;
+    color: #fff;
+  }
+
+  &.incorrect {
+    background: #ef4444;
+    color: #fff;
+  }
+
+  &.pending {
+    background: #f59e0b;
+    color: #000;
+  }
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 2.5rem;
+
+    &.icon-correct {
+      color: #10b981;
+    }
+
+    &.icon-incorrect {
+      color: #ef4444;
+    }
+
+    &.icon-pending {
+      color: #f59e0b;
+    }
+  }
+}
+
+.panel-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: 'Kanit';
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #000;
+
+  .score {
+    min-width: 35px;
+    text-align: center;
+  }
+
+  .vs {
+    color: #cbd5e0;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+}
+
+.match-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  .league-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    .dot {
+      opacity: 0.5;
+    }
+  }
+
+  .match-date {
+    font-family: 'Kanit';
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.4rem 0.8rem;
+    background: #f3f4f6;
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+  }
+
+  .teams {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+
+      .team-logo {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+      }
+
+      .team-name {
+        font-family: 'Kanit';
+        font-weight: 700;
+        font-size: 1rem;
+        color: #000;
+      }
+    }
+
+    .vs {
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: $text-muted;
+      padding: 0 0.5rem;
+    }
+  }
+}
+
+.scores {
+  display: flex;
+  gap: 1rem;
+}
+
+.score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1.2rem;
+  border: 2px solid #000;
+  min-width: 120px;
+
+  .score-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: $text-muted;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .score-value {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: $text-light;
+    letter-spacing: -0.5px;
+  }
+
+  &.predicted {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  &.actual {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  &.pending {
+    background: #f3f4f6;
+    border-style: dashed;
+
+    .score-value {
+      font-size: 0.85rem;
+      color: $text-muted;
+    }
+  }
+}
+
+.points-earned {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.5rem;
+  border: 3px solid #000;
+  min-width: 100px;
+  box-shadow: 4px 4px 0 #000;
+
+  .points-value {
+    font-size: 2rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .points-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  &.positive {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    color: #fff;
+
+    .points-value {
+      color: #fff;
+    }
+
+    .points-label {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  &.negative {
+    background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    color: #fff;
+
+    .points-value {
+      color: #fff;
+    }
+
+    .points-label {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  &:not(.positive):not(.negative) {
+    background: #f3f4f6;
+    color: $text-muted;
+  }
+}
+
+/* --- EMPTY STATE --- */
+.empty-state {
+  text-align: center;
+  padding: 4rem;
+  color: $text-muted;
+
+  p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .prediction-card {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    .status-badge {
+      justify-content: flex-start;
+    }
+
+    .scores {
+      flex-direction: column;
+    }
+
+    .points-earned {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .history-container {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .match-info .teams {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    .vs {
+      display: none;
+    }
+  }
+}

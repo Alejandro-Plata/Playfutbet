@@ -1,0 +1,248 @@
+:host {
+    display: block;
+    height: 100vh;
+    /* Brutalist Theme Variables */
+    --c-yellow: #fff200;
+    --c-black: #000;
+    --c-white: #fff;
+    --c-grey: #f4f4f4;
+    --c-border: 3px solid #000;
+    --shadow-hard: 6px 6px 0 #000;
+}
+
+.split-layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Kanit', sans-serif;
+}
+
+.panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+
+/* --- LEFT PANEL --- */
+.left-panel {
+    background-color: var(--c-grey);
+    padding: 4rem;
+    border-right: var(--c-border);
+    display: flex;
+    align-items: center;
+    /* Center content vertically */
+}
+
+.brand-content {
+    max-width: 600px;
+    width: 100%;
+}
+
+h1 {
+    color: var(--c-black);
+    font-size: clamp(3.5rem, 7vw, 8rem);
+    font-weight: 900;
+    line-height: 0.85;
+    margin: 0 0 2rem 0;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+    /* Ensure text is above background elements if any */
+
+    .highlight {
+        color: var(--c-white);
+        background: var(--c-black);
+        padding: 0 10px;
+        display: inline-block;
+        /* Fix for potential overlap issues */
+    }
+}
+
+.not-highlight {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--c-black);
+    opacity: 0.4;
+    display: inline-block;
+}
+
+.subtitle {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    border-left: 6px solid var(--c-black);
+    padding-left: 1.5rem;
+    margin-bottom: 3rem;
+    text-transform: uppercase;
+    color: var(--c-black);
+}
+
+.stats-row {
+    margin-top: 2rem;
+}
+
+.stat {
+    border: 3px solid #000;
+    padding: 1rem 1.5rem;
+    background: var(--c-white);
+    box-shadow: var(--shadow-hard);
+    display: inline-block;
+
+    .value {
+        font-size: 2.5rem;
+        font-weight: 900;
+        display: block;
+        color: var(--c-black);
+    }
+
+    .label {
+        font-size: 0.8rem;
+        font-weight: 900;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+}
+
+/* --- RIGHT PANEL --- */
+.right-panel {
+    background-color: var(--c-white);
+    padding: 4rem;
+    position: relative;
+}
+
+/* Navigation Tabs */
+.top-nav {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    display: flex;
+    gap: 0;
+    border: 3px solid #000;
+    background: #fff;
+    box-shadow: 4px 4px 0 #000;
+    z-index: 20;
+
+    .nav-tab {
+        padding: 0.8rem 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        cursor: pointer;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        background: #fff;
+        color: #000;
+        transition: all 0.2s ease;
+        text-decoration: none;
+
+        &:hover {
+            background: #f4f4f4;
+        }
+
+        &.active {
+            background: var(--c-yellow);
+            color: #000;
+        }
+
+        &:first-child {
+            border-right: 3px solid #000;
+        }
+    }
+}
+
+/* Content Area for Router Outlet */
+.auth-content {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+}
+
+/* Ball Animation */
+/* Ball Animation */
+.ball-container {
+    position: absolute;
+    top: -200px;
+    /* Start further off-screen */
+    right: -200px;
+    width: 150px;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 1;
+
+    img {
+        width: 100%;
+        filter: grayscale(100%) contrast(1.2);
+    }
+
+    &.kick-in {
+        animation: kickBall 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+}
+
+@keyframes kickBall {
+    0% {
+        top: -200px;
+        right: -200px;
+        opacity: 1;
+        transform: rotate(0deg) scale(0.5);
+    }
+
+    60% {
+        opacity: 1;
+        /* Keep fully visible during flight */
+        transform: rotate(400deg) scale(1.1);
+        /* Slight overshoot */
+    }
+
+    80% {
+        top: 50px;
+        right: 50px;
+        opacity: 1;
+        transform: rotate(360deg) scale(1);
+    }
+
+    100% {
+        top: 50px;
+        right: 50px;
+        opacity: 0.15;
+        /* Fade to watermark opacity */
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .split-layout {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .left-panel {
+        padding: 3rem 2rem;
+        border-right: none;
+        border-bottom: 3px solid #000;
+        min-height: 40vh;
+    }
+
+    .right-panel {
+        padding: 3rem 2rem;
+        min-height: 60vh;
+    }
+
+    h1 {
+        font-size: 3rem;
+    }
+
+    .ball-container {
+        width: 80px;
+
+        &.kick-in {
+            top: 20px;
+            right: 20px;
+        }
+    }
+}

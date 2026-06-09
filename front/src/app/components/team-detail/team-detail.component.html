@@ -1,0 +1,192 @@
+<div class="team-detail-container">
+  <!-- Loading State -->
+  @if (isLoading) {
+  <div class="loading-state">
+    <p>Cargando datos del equipo...</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (error) {
+  <div class="error-state">
+    <p>{{ error }}</p>
+  </div>
+  }
+
+  <!-- Team Detail Content -->
+  @if (!isLoading && !error) {
+  <div>
+
+    <!-- Team Header -->
+    <div class="team-header">
+      <div class="header-content">
+        <div class="team-main-info">
+          <img [src]="teamLogo" [alt]="teamName" class="team-logo-large">
+          <div class="team-text-info">
+            <h1 class="team-name">{{ teamName }}</h1>
+            @if (getPositionClass(teamStats?.position || 0)) {
+            <div class="competition-badge" [ngClass]="getPositionClass(teamStats?.position || 0)">
+              @if (getPositionClass(teamStats?.position || 0) === 'champions') {
+              <span>Champions League</span>
+              } @else if (getPositionClass(teamStats?.position || 0) === 'europa') {
+              <span>Europa League</span>
+              } @else if (getPositionClass(teamStats?.position || 0) === 'relegation') {
+              <span>Zona de Descenso</span>
+              }
+            </div>
+            }
+            <div class="header-stats">
+              <div class="header-stat-item">
+                <span class="header-stat-value">{{ teamStats?.position || 0 }}º</span>
+                <span class="header-stat-label">Posición</span>
+              </div>
+              <div class="header-stat-divider"></div>
+              <div class="header-stat-item">
+                <span class="header-stat-value">{{ teamStats?.points || 0 }}</span>
+                <span class="header-stat-label">Puntos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Stats Grid -->
+    <div class="stats-section">
+      <h2 class="section-title">
+        <ion-icon name="stats-chart"></ion-icon>
+        Estadísticas del Equipo
+      </h2>
+
+      <div class="stats-grid">
+        <div class="stat-card points">
+          <div class="stat-icon">
+            <ion-icon name="trophy"></ion-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Puntos</span>
+            <span class="stat-value">{{ teamStats?.points || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card position">
+          <div class="stat-icon">
+            <ion-icon name="ribbon"></ion-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Posición</span>
+            <span class="stat-value">{{ teamStats?.position || 0 }}º</span>
+          </div>
+        </div>
+
+        <div class="stat-card winrate">
+          <div class="stat-icon">
+            <ion-icon name="stats-chart"></ion-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">% Victorias</span>
+            <span class="stat-value">{{ teamStats?.winPercentage || 0 }}%</span>
+          </div>
+        </div>
+
+        <div class="stat-card goals-for">
+          <div class="stat-icon">
+            <ion-icon name="football"></ion-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Goles a Favor</span>
+            <span class="stat-value">{{ teamStats?.goalsFor || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card goals-against">
+          <div class="stat-icon">
+            <ion-icon name="football"></ion-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Goles en Contra</span>
+            <span class="stat-value">{{ teamStats?.goalsAgainst || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card goal-diff" [ngClass]="(teamStats?.goalDifference || 0) >= 0 ? 'positive' : 'negative'">
+          <div class="stat-icon">
+            <ion-icon name="football"></ion-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Diferencia de Goles</span>
+            <span class="stat-value">{{ (teamStats?.goalDifference || 0) >= 0 ? '+' : '' }}{{
+              teamStats?.goalDifference || 0 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Stats Row -->
+      <div class="record-stats">
+        <div class="record-item won">
+          <span class="record-label">Victorias</span>
+          <span class="record-value">{{ teamStats?.won || 0 }}</span>
+        </div>
+        <div class="record-item drawn">
+          <span class="record-label">Empates</span>
+          <span class="record-value">{{ teamStats?.drawn || 0 }}</span>
+        </div>
+        <div class="record-item lost">
+          <span class="record-label">Derrotas</span>
+          <span class="record-value">{{ teamStats?.lost || 0 }}</span>
+        </div>
+        <div class="record-item played">
+          <span class="record-label">Partidos Jugados</span>
+          <span class="record-value">{{ teamStats?.played || 0 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Players Section -->
+    <div class="players-section">
+      <h2 class="section-title">
+        <ion-icon name="football"></ion-icon>
+        Plantilla
+      </h2>
+
+      <div class="table-wrapper">
+        <table class="players-table">
+          <thead>
+            <tr>
+              <th class="player-col">Jugador</th>
+              <th class="stat-col">Goles</th>
+              <th class="stat-col">Tarjetas Amarillas</th>
+              <th class="stat-col">Tarjetas Rojas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (player of players; track player.name) {
+            <tr class="player-row">
+              <td class="player-cell">
+                <img [src]="player.avatar_url" [alt]="player.name" class="player-avatar">
+                <span class="player-name">{{ player.name }}</span>
+              </td>
+              <td class="stat-cell goals">
+                <span class="stat-badge">{{ player.goals }}</span>
+              </td>
+              <td class="stat-cell yellow">
+                <span class="stat-badge">{{ player.yellow_cards || 0 }}</span>
+              </td>
+              <td class="stat-cell red">
+                <span class="stat-badge">{{ player.red_cards || 0 }}</span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (players.length === 0) {
+      <div class="empty-players">
+        <p>No hay jugadores disponibles para este equipo.</p>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>

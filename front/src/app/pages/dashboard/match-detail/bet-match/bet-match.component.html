@@ -1,0 +1,55 @@
+<div class="bet-container">
+
+    <div class="points-display">
+        <ion-icon name="wallet"></ion-icon>
+        <div class="points-info">
+            <span class="label">TUS PUNTOS</span>
+            <span class="value">{{ userPoints }}</span>
+        </div>
+    </div>
+
+    <div class="score-prediction">
+        <h3>PREDICE EL RESULTADO</h3>
+        <div class="score-inputs">
+
+            <div class="team-score-group">
+                <img [src]="homeTeam.logoUrl" [alt]="homeTeam.name" class="team-logo"
+                    (click)="navigateToTeam(homeTeam.name)" style="cursor: pointer;">
+                <div class="score-control">
+                    <button class="score-btn" (click)="decrementScore('home')">
+                        <ion-icon name="remove"></ion-icon>
+                    </button>
+                    <span class="score-value">{{ betData.homeScore }}</span>
+                    <button class="score-btn" (click)="incrementScore('home')">
+                        <ion-icon name="add"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <span class="separator">-</span>
+
+            <div class="team-score-group">
+                <img [src]="awayTeam.logoUrl" [alt]="awayTeam.name" class="team-logo"
+                    (click)="navigateToTeam(awayTeam.name)" style="cursor: pointer;">
+                <div class="score-control">
+                    <button class="score-btn" (click)="decrementScore('away')">
+                        <ion-icon name="remove"></ion-icon>
+                    </button>
+                    <span class="score-value">{{ betData.awayScore }}</span>
+                    <button class="score-btn" (click)="incrementScore('away')">
+                        <ion-icon name="add"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <button class="place-bet-btn" (click)="placeBet()">
+        <ion-icon name="trophy"></ion-icon>
+        REALIZAR APUESTA
+    </button>
+
+</div>
