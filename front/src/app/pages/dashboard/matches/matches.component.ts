@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -17,13 +17,14 @@ import { getTeamLogo } from '../../../utils/team-logos';
     templateUrl: './matches.component.html',
     styleUrls: ['./matches.component.scss']
 })
-export class MatchesComponent implements OnInit {
+export class MatchesComponent implements OnInit, OnDestroy {
     currentJornada = 1;
     maxJornada = 38;
     searchTerm: string = '';
     filterStatus: 'ALL' | 'LIVE' | 'UPCOMING' | 'FINISHED' = 'ALL';
     matchdayMatches: DisplayMatch[] = [];
     isLoading: boolean = true;
+    private refreshHandle?: ReturnType<typeof setInterval>;
 
     constructor(
         private router: Router,
@@ -33,15 +34,48 @@ export class MatchesComponent implements OnInit {
     }
 
     async ngOnInit() {
-        const state = await this.matchService.getSimulationState();
-        this.currentJornada = state.currentJornada || 1;
-        await this.loadJornadaMatches(this.currentJornada);
+        await this.initialLoad();
+        // Auto-refresco para que los partidos en vivo se actualicen sin recargar la página.
+        this.refreshHandle = setInterval(() => this.loadJornadaMatches(this.currentJornada, false), 20000);
     }
 
-    async loadJornadaMatches(jornada: number) {
+    ngOnDestroy() {
+        if (this.refreshHandle) clearInterval(this.refreshHandle);
+    }
+
+    /**
+     * Carga inicial con reintentos. Cubre el arranque en frío del backend (Render free):
+     * si la primera petición falla o aún no hay datos, reintenta en vez de dejar la lista
+     * vacía obligando al usuario a recargar manualmente.
+     */
+    private async initialLoad() {
+        this.isLoading = true;
+        const maxAttempts = 15;
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                const state = await this.matchService.getSimulationState();
+                this.currentJornada = state.currentJornada || 1;
+                await this.loadJornadaMatches(this.currentJornada, false);
+                if (this.matchdayMatches.length > 0) {
+                    this.isLoading = false;
+                    return;
+                }
+            } catch {
+                // El backend puede estar despertando (cold start); reintentamos tras una pausa.
+            }
+            if (attempt < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+        }
+        this.isLoading = false;
+    }
+
+    async loadJornadaMatches(jornada: number, manageLoading: boolean = true) {
         try {
-            this.isLoading = true;
-            this.matchdayMatches = [];
+            if (manageLoading) {
+                this.isLoading = true;
+                this.matchdayMatches = [];
+            }
 
             const apiMatches = await this.matchService.getResultsByJornada(jornada);
 
@@ -63,7 +97,7 @@ export class MatchesComponent implements OnInit {
         } catch (error) {
             console.error('Error loading matches:', error);
         } finally {
-            this.isLoading = false;
+            if (manageLoading) this.isLoading = false;
         }
     }
 

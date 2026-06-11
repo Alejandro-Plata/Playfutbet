@@ -95,9 +95,15 @@
 
         </div>
         } @empty {
+        @if (isLoading) {
+        <div class="no-results">
+            <p>Cargando partidos…</p>
+        </div>
+        } @else {
         <div class="no-results">
             <p>No hay partidos en esta jornada que coincidan con la búsqueda.</p>
         </div>
+        }
         }
     </div>
 
