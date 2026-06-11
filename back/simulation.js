@@ -263,7 +263,9 @@ class SimulationEngine {
     }
 
     startTick() {
-        setInterval(() => this.tick(), 10000); // Check every 10s
+        // Evita duplicar el intervalo si init() se reintenta tras un fallo.
+        if (this._tickInterval) clearInterval(this._tickInterval);
+        this._tickInterval = setInterval(() => this.tick(), 10000); // Check every 10s
     }
 
     async tick() {

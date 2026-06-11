@@ -29,8 +29,17 @@ async function awaitInit(req, res, next) {
         await sim.initialized;
         next();
     } catch (err) {
-        console.error("⚠️ Solicitud rechazada por inicialización fallida/en curso:", err);
-        res.status(503).json({ error: "Servicio inicializándose, por favor reintente", details: err.message });
+        // La primera inicialización falló (p.ej. timeout de conexión a Postgres en un cold start).
+        // En vez de devolver 503 para siempre, reintentamos la inicialización en esta misma petición.
+        console.error("⚠️ Inicialización fallida, reintentando:", err.message);
+        try {
+            sim.initialized = sim.init();
+            await sim.initialized;
+            next();
+        } catch (err2) {
+            console.error("⚠️ Reintento de inicialización fallido:", err2);
+            res.status(503).json({ error: "Servicio inicializándose, por favor reintente", details: err2.message });
+        }
     }
 }
 app.use('/api', awaitInit);
