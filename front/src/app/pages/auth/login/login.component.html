@@ -26,8 +26,12 @@
       }
     </div>
 
-    <button type="submit" class="action-btn">
-      INICIA SESIÓN <ion-icon name="arrow-forward"></ion-icon>
+    <button type="submit" class="action-btn" [disabled]="loading">
+      @if (loading) {
+        <span class="spinner"></span> INICIANDO…
+      } @else {
+        INICIA SESIÓN <ion-icon name="arrow-forward"></ion-icon>
+      }
     </button>
   </form>
 </div>

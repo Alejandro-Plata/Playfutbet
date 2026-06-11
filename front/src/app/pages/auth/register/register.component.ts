@@ -18,6 +18,7 @@ import { NotificationService } from '../../../services/notification.service';
 export class RegisterComponent {
   registerForm: FormGroup;
   animate = false;
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -47,12 +48,15 @@ export class RegisterComponent {
         return;
       }
 
+      this.loading = true;
       try {
         await this.authService.register({ username, email, password });
         this.router.navigate(['/dashboard/panel']);
       } catch (error: any) {
         const errorMessage = error.message || 'Ha ocurrido un error en el registro';
         this.notificationService.showAlert(errorMessage, 'error');
+      } finally {
+        this.loading = false;
       }
     } else {
       this.registerForm.markAllAsTouched();

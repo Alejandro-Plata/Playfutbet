@@ -46,8 +46,12 @@
       </div>
     </div>
 
-    <button type="submit" class="action-btn">
-      REGISTRARSE <ion-icon name="arrow-forward"></ion-icon>
+    <button type="submit" class="action-btn" [disabled]="loading">
+      @if (loading) {
+        <span class="spinner"></span> REGISTRANDO…
+      } @else {
+        REGISTRARSE <ion-icon name="arrow-forward"></ion-icon>
+      }
     </button>
   </form>
 </div>

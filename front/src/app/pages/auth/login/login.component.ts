@@ -18,6 +18,7 @@ import { NotificationService } from '../../../services/notification.service';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   animate = false;
+  loading = false;
 
   constructor(private fb: FormBuilder, private router: Router, private authService: AuthService, private notificationService: NotificationService
   ) {
@@ -37,12 +38,15 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
 
+      this.loading = true;
       try {
         await this.authService.login({ email, password });
         this.router.navigate(['/dashboard/panel']);
       } catch (error: any) {
         const errorMessage = error.message || 'Ha ocurrido un error en el inicio de sesión';
         this.notificationService.showAlert(errorMessage, 'error');
+      } finally {
+        this.loading = false;
       }
     }
 
