@@ -7,12 +7,24 @@ const bcrypt = require('bcryptjs');
 const { z } = require('zod');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const rateLimit = require('express-rate-limit');
 const db = require('./db');
 const SimulationEngine = require('./simulation');
 
 const app = express();
+// Detrás del proxy de Render: necesario para que el rate limit use la IP real del cliente.
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json());
+
+// Rate limiting anti fuerza bruta para los endpoints de autenticación.
+const limiteAuth = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Demasiados intentos. Inténtalo de nuevo en unos minutos.' },
+});
 
 app.use((req, res, next) => {
     const start = Date.now();
@@ -44,7 +56,11 @@ async function awaitInit(req, res, next) {
 }
 app.use('/api', awaitInit);
 
-const SECRET_KEY = process.env.JWT_SECRET || "mi_clave_secreta_por_defecto_cambiame";
+const SECRET_KEY = process.env.JWT_SECRET;
+if (!SECRET_KEY) {
+    console.error('FATAL: falta la variable de entorno JWT_SECRET. El servidor no arranca sin un secreto seguro.');
+    process.exit(1);
+}
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -115,7 +131,7 @@ const betSchema = z.object({
 
 // --- ENDPOINTS DE AUTENTICACIÓN ---
 
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', limiteAuth, async (req, res) => {
     try {
         const result = registerSchema.safeParse(req.body);
         if (!result.success) {
@@ -158,7 +174,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', limiteAuth, async (req, res) => {
     try {
         const { email, password } = req.body;
         const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -278,8 +294,11 @@ app.get('/api/league/results/:jornada', async (req, res) => {
     res.json(sim.allMatches.filter(m => m.jornada === jornada));
 });
 
-app.get('/api/bets/user/:userId', (req, res) => {
+app.get('/api/bets/user/:userId', authenticateToken, (req, res) => {
     const userId = parseInt(req.params.userId);
+    if (req.user.id !== userId) {
+        return res.status(403).json({ error: "No puedes ver las apuestas de otro usuario" });
+    }
     const userBets = sim.db.bets.filter(b => Number(b.userId) === userId);
     const enrichedBets = userBets.map(bet => {
         const match = sim.allMatches.find(m => Number(m.id) === Number(bet.matchId));
@@ -306,7 +325,7 @@ app.get('/api/matches/:id', (req, res) => {
     res.json(matchDetail);
 });
 
-app.get('/api/users/:id', async (req, res) => {
+app.get('/api/users/:id', authenticateToken, async (req, res) => {
     try {
         const id = parseInt(req.params.id);
 
@@ -325,11 +344,15 @@ app.get('/api/users/:id', async (req, res) => {
         const userResponse = {
             id: user.id,
             username: user.username,
-            email: user.email,
             points: user.points,
             avatar: user.avatar,
             rank: rank
         };
+
+        // El email es un dato personal: solo se expone al propio usuario.
+        if (req.user.id === id) {
+            userResponse.email = user.email;
+        }
 
         res.json(userResponse);
     } catch (error) {
@@ -338,9 +361,12 @@ app.get('/api/users/:id', async (req, res) => {
     }
 });
 
-app.put('/api/users/:id', async (req, res) => {
+app.put('/api/users/:id', authenticateToken, async (req, res) => {
     try {
         const id = parseInt(req.params.id);
+        if (req.user.id !== id) {
+            return res.status(403).json({ error: "No puedes modificar el perfil de otro usuario" });
+        }
         const { username, avatar } = req.body;
 
         await db.query(
@@ -364,7 +390,7 @@ app.put('/api/users/:id', async (req, res) => {
 
 // --- CHAT ENDPOINTS ---
 
-app.get('/api/messages/:matchId', async (req, res, next) => {
+app.get('/api/messages/:matchId', authenticateToken, async (req, res, next) => {
     try {
         const matchId = parseInt(req.params.matchId);
         if (isNaN(matchId)) return res.status(400).json({ error: "ID de partido inválido" });
@@ -375,12 +401,16 @@ app.get('/api/messages/:matchId', async (req, res, next) => {
     }
 });
 
-app.post('/api/messages', async (req, res, next) => {
+app.post('/api/messages', authenticateToken, async (req, res, next) => {
     try {
-        const { matchId, username, text } = req.body;
-        if (!matchId || !username || !text || text.trim() === "") {
+        const { matchId, text } = req.body;
+        if (!matchId || !text || text.trim() === "") {
             return res.status(400).json({ error: "Datos faltantes o texto vacío" });
         }
+
+        // El autor se deriva del usuario autenticado, nunca del body (evita suplantación).
+        const autor = sim.db.users.find(u => Number(u.id) === Number(req.user.id));
+        const username = autor ? autor.username : 'Usuario';
 
         const newMessage = {
             match_id: parseInt(matchId),

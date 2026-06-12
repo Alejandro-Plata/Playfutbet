@@ -81,6 +81,9 @@ export class AuthService {
 
   async isAuthenticated(): Promise<boolean> {
     const token = await getToken();
+    // Aseguramos que el token estático esté disponible para el interceptor
+    // antes de que el dashboard lance sus peticiones (evita 401 en recargas).
+    AuthService.token = token;
     return token !== null;
   }
 
