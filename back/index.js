@@ -112,12 +112,6 @@ app.use('/api', require('./rutas/matches'));
 app.use('/api/bets', require('./rutas/bets'));
 app.use('/api/messages', require('./rutas/messages'));
 app.use('/api/notifications', require('./rutas/notifications'));
-// Compatibilidad: leaderboard era /api/leaderboard — ya en rutas/users.js como /api/users/leaderboard
-// Alias para no romper el frontend existente
-app.use('/api/leaderboard', (req, res, next) => {
-    req.url = '/leaderboard' + req.url;
-    require('./rutas/users')(req, res, next);
-});
 
 // --- HEALTH CHECK ---
 app.get('/', (_, res) => res.send('PlayFutBet API v2 running'));

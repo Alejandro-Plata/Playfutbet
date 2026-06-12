@@ -14,7 +14,7 @@ export class UserService {
     constructor(private http: HttpClient) { }
 
     async getLeaderboard(): Promise<UserRanking[]> {
-        return firstValueFrom(this.http.get<UserRanking[]>(`${this.apiUrl}/leaderboard`));
+        return firstValueFrom(this.http.get<UserRanking[]>(`${this.apiUrl}/users/leaderboard`));
     }
 
     async getSeasonLeaderboard(): Promise<UserRanking[]> {

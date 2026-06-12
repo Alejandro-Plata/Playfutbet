@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 // GET /api/matches
-router.get('/', async (req, res) => {
+router.get('/matches', async (req, res) => {
     const sim = req.app.get('sim');
     res.json(sim.matches || []);
 });
 
 // GET /api/matches/:id
-router.get('/:id', (req, res) => {
+router.get('/matches/:id', (req, res) => {
     const sim = req.app.get('sim');
     const match = sim.allMatches.find(m => m.id === parseInt(req.params.id));
     if (!match) return res.status(404).json({ error: 'Partido no encontrado' });
