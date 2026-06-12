@@ -112,6 +112,73 @@ input {
   }
 }
 
+.google-btn-wrapper {
+  width: 100%;
+  margin-bottom: 1.25rem;
+  min-height: 44px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  color: #888;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: #000;
+  }
+}
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 6px;
+  background: #e0e0e0;
+  border: 1px solid #000;
+  position: relative;
+  overflow: hidden;
+
+  .bar-fill {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+
+  &.level-0 .bar-fill { width: 0%; background: #ff3b30; }
+  &.level-1 .bar-fill { width: 25%; background: #ff3b30; }
+  &.level-2 .bar-fill { width: 50%; background: #ff9500; }
+  &.level-3 .bar-fill { width: 75%; background: #34c759; }
+  &.level-4 .bar-fill { width: 100%; background: #30d158; }
+}
+
+.strength-label {
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 55px;
+  text-align: right;
+  color: #555;
+}
+
 /* Botón */
 .action-btn {
   width: 100%;

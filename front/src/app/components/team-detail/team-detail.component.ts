@@ -4,15 +4,17 @@ import { ActivatedRoute } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { trophy, football, ribbon, statsChart, arrowBack } from 'ionicons/icons';
+import { ChartConfiguration } from 'chart.js';
 import { LeagueService } from '../../services/league.service';
 import { Player, TeamStanding, TeamDetailStats } from '../../types/types';
 import { getTeamLogo } from '../../utils/team-logos';
 import { Router } from '@angular/router';
+import { StatChartComponent } from '../stat-chart/stat-chart.component';
 
 @Component({
   selector: 'app-team-detail',
   standalone: true,
-  imports: [CommonModule, IonIcon],
+  imports: [CommonModule, IonIcon, StatChartComponent],
   templateUrl: './team-detail.component.html',
   styleUrls: ['./team-detail.component.scss']
 })
@@ -23,6 +25,7 @@ export class TeamDetailComponent implements OnInit {
   teamStats: TeamDetailStats | null = null;
   isLoading = true;
   error: string | null = null;
+  goalsChartConfig: ChartConfiguration | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,21 +50,71 @@ export class TeamDetailComponent implements OnInit {
       this.isLoading = true;
       this.error = null;
 
-      const players = await this.leagueService.getTeamPlayers(teamName);
-      const standings = await this.leagueService.getStandings();
+      const [players, standings] = await Promise.all([
+        this.leagueService.getTeamPlayers(teamName),
+        this.leagueService.getStandings(),
+      ]);
 
       this.players = players;
 
       const teamStanding = standings.find(s => s.name === teamName);
       if (teamStanding) {
-        const stats = this.calculateTeamStats(teamStanding, standings);
-        this.teamStats = stats;
+        this.teamStats = this.calculateTeamStats(teamStanding, standings);
       }
+
+      await this.loadGoalsChart(teamName);
     } catch (err) {
       console.error('Error loading team data:', err);
       this.error = 'Error al cargar los datos del equipo';
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  private async loadGoalsChart(teamName: string) {
+    try {
+      const history = await this.leagueService.getStandingsHistory(teamName);
+      if (!history.length) return;
+
+      const sorted = [...history].sort((a, b) => a.jornada - b.jornada);
+      const labels = sorted.map(r => `J${r.jornada}`);
+
+      this.goalsChartConfig = {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Goles a Favor',
+              data: sorted.map(r => r.gf),
+              backgroundColor: 'rgba(52,199,89,0.7)',
+              borderColor: '#34c759',
+              borderWidth: 1,
+            },
+            {
+              label: 'Goles en Contra',
+              data: sorted.map(r => r.gc),
+              backgroundColor: 'rgba(255,59,48,0.7)',
+              borderColor: '#ff3b30',
+              borderWidth: 1,
+            }
+          ]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 1 },
+              title: { display: true, text: 'Goles' }
+            }
+          },
+          plugins: {
+            legend: { position: 'top' }
+          }
+        }
+      };
+    } catch {
+      // No history yet — chart stays null, shown as "Sin datos"
     }
   }
 

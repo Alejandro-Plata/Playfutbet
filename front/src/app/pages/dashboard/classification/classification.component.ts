@@ -1,18 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { chevronBack, chevronForward, trophy, football } from 'ionicons/icons';
+import { ChartConfiguration } from 'chart.js';
 import { LeagueService } from '../../../services/league.service';
 import { MatchService } from '../../../services/match.service';
 import { Match, MatchStatus, ClassificationTeamStats, MatchdayMatch } from '../../../types/types';
 import { getTeamLogo } from '../../../utils/team-logos';
+import { StatChartComponent } from '../../../components/stat-chart/stat-chart.component';
 
 @Component({
   selector: 'app-classification',
   standalone: true,
-  imports: [CommonModule, IonIcon],
+  imports: [CommonModule, FormsModule, IonIcon, StatChartComponent],
   templateUrl: './classification.component.html',
   styleUrls: ['./classification.component.scss']
 })
@@ -26,12 +29,20 @@ export class ClassificationComponent implements OnInit {
   matchdayMatches: MatchdayMatch[] = [];
   isLoading = true;
 
+  selectedTeam = '';
+  positionChartConfig: ChartConfiguration | null = null;
+  isChartLoading = false;
+
   constructor(
     private router: Router,
     private leagueService: LeagueService,
     private matchService: MatchService
   ) {
     addIcons({ chevronBack, chevronForward, trophy, football });
+  }
+
+  get teamNames(): string[] {
+    return [...this.standings].sort((a, b) => a.team.localeCompare(b.team)).map(s => s.team);
   }
 
   async ngOnInit() {
@@ -137,6 +148,51 @@ export class ClassificationComponent implements OnInit {
     if (this.currentMatchday < this.maxMatchday) {
       this.currentMatchday++;
       this.loadMatchdayMatches(this.currentMatchday);
+    }
+  }
+
+  async onTeamSelect(team: string) {
+    if (!team) { this.positionChartConfig = null; return; }
+    this.isChartLoading = true;
+    try {
+      const history = await this.leagueService.getStandingsHistory(team);
+      const sorted = [...history].sort((a, b) => a.jornada - b.jornada);
+      const labels = sorted.map(r => `J${r.jornada}`);
+      const positions = sorted.map(r => r.position);
+
+      this.positionChartConfig = {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: team,
+            data: positions,
+            borderColor: '#f5c518',
+            backgroundColor: 'rgba(245,197,24,0.15)',
+            borderWidth: 2,
+            pointBackgroundColor: '#f5c518',
+            pointRadius: 4,
+            tension: 0.3,
+            fill: true,
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              reverse: true,
+              min: 1,
+              max: 20,
+              ticks: { stepSize: 1 },
+              title: { display: true, text: 'Posición' }
+            }
+          },
+          plugins: { legend: { display: false } }
+        }
+      };
+    } catch {
+      this.positionChartConfig = null;
+    } finally {
+      this.isChartLoading = false;
     }
   }
 

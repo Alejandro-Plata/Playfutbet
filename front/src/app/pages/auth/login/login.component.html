@@ -3,15 +3,20 @@
     <h2>Inicia sesión</h2>
   </div>
 
+  <!-- Botón de Google GIS (solo web) -->
+  <div id="google-btn-login" class="google-btn-wrapper"></div>
+
+  <div class="divider"><span>o con email</span></div>
+
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div class="input-group">
       <label>EMAIL</label>
-      <input type="text" formControlName="email" placeholder="Juan">
+      <input type="email" formControlName="email" placeholder="tu@email.com">
       @if(loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
-      <span class="error-msg">El usuario está vacío</span>
+      <span class="error-msg">El email está vacío</span>
       }
-      @if(loginForm.get('email')?.hasError('minlength') && loginForm.get('email')?.touched) {
-      <span class="error-msg">Mínimo 3 caracteres</span>
+      @if(loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched) {
+      <span class="error-msg">Formato de email inválido</span>
       }
     </div>
 

@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward } from 'ionicons/icons';
+import { arrowForward, logoGoogle } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth-service';
 import { NotificationService } from '../../../services/notification.service';
+
+declare const google: any;
 
 @Component({
   selector: 'app-login',
@@ -15,14 +17,21 @@ import { NotificationService } from '../../../services/notification.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, IonIcon]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterViewInit {
   loginForm: FormGroup;
   animate = false;
   loading = false;
+  googleLoading = false;
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService, private notificationService: NotificationService
+  private readonly GOOGLE_CLIENT_ID = ''; // Rellenar con el Client ID de Google Cloud Console
+
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService,
+    private notificationService: NotificationService,
   ) {
-    addIcons({ arrowForward });
+    addIcons({ arrowForward, logoGoogle });
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -30,25 +39,60 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Retraso mínimo para asegurar que la animación se vea al entrar a la ruta
     setTimeout(() => this.animate = true, 100);
   }
 
-  async onSubmit() {
-    if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-
-      this.loading = true;
-      try {
-        await this.authService.login({ email, password });
-        this.router.navigate(['/dashboard/panel']);
-      } catch (error: any) {
-        const errorMessage = error.message || 'Ha ocurrido un error en el inicio de sesión';
-        this.notificationService.showAlert(errorMessage, 'error');
-      } finally {
-        this.loading = false;
-      }
+  ngAfterViewInit() {
+    if (this.GOOGLE_CLIENT_ID && !this.authService.isNative()) {
+      this.loadGoogleGIS();
     }
+  }
 
+  private loadGoogleGIS() {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => this.initGoogleButton();
+    document.head.appendChild(script);
+  }
+
+  private initGoogleButton() {
+    if (typeof google === 'undefined') return;
+    google.accounts.id.initialize({
+      client_id: this.GOOGLE_CLIENT_ID,
+      callback: (response: any) => this.handleGoogleResponse(response),
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('google-btn-login'),
+      { theme: 'outline', size: 'large', text: 'signin_with', width: '100%' }
+    );
+  }
+
+  async handleGoogleResponse(response: any) {
+    if (!response.credential) return;
+    this.googleLoading = true;
+    try {
+      await this.authService.loginWithGoogle(response.credential);
+      this.router.navigate(['/dashboard/panel']);
+    } catch (error: any) {
+      this.notificationService.showAlert(error.message || 'Error con Google', 'error');
+    } finally {
+      this.googleLoading = false;
+    }
+  }
+
+  async onSubmit() {
+    if (!this.loginForm.valid) return;
+    const { email, password } = this.loginForm.value;
+    this.loading = true;
+    try {
+      await this.authService.login({ email, password });
+      this.router.navigate(['/dashboard/panel']);
+    } catch (error: any) {
+      this.notificationService.showAlert(error.message || 'Error al iniciar sesión', 'error');
+    } finally {
+      this.loading = false;
+    }
   }
 }

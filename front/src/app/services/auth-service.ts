@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { Capacitor } from '@capacitor/core';
 import { RegisterData, LoginData, User, AuthResponse } from '../types/types';
 import { saveAuthData } from '../utils/setPreferences';
 import { getToken, getUser } from '../utils/getPreferences';
@@ -26,13 +27,10 @@ export class AuthService {
   async register(data: RegisterData): Promise<User> {
     try {
       const authResponse = await firstValueFrom(this.http.post<AuthResponse>(`${this.apiUrl}/register`, data));
-
       await saveAuthData(authResponse);
       AuthService.token = authResponse.token;
-
       return authResponse.user;
     } catch (error: any) {
-      console.error('Fallo de registro:', error);
       throw new Error(error.error?.error || 'Error en el registro');
     }
   }
@@ -40,15 +38,29 @@ export class AuthService {
   async login(data: LoginData): Promise<User> {
     try {
       const authResponse = await firstValueFrom(this.http.post<AuthResponse>(`${this.apiUrl}/login`, data));
-
       await saveAuthData(authResponse);
       AuthService.token = authResponse.token;
-
       return authResponse.user;
     } catch (error: any) {
-      console.error('Fallo de login:', error);
       throw new Error(error.error?.error || 'Error en el login');
     }
+  }
+
+  async loginWithGoogle(idToken: string): Promise<User> {
+    try {
+      const authResponse = await firstValueFrom(
+        this.http.post<AuthResponse>(`${this.apiUrl}/auth/google`, { idToken })
+      );
+      await saveAuthData(authResponse);
+      AuthService.token = authResponse.token;
+      return authResponse.user;
+    } catch (error: any) {
+      throw new Error(error.error?.error || 'Error al iniciar sesión con Google');
+    }
+  }
+
+  isNative(): boolean {
+    return Capacitor.isNativePlatform();
   }
 
   async logout(): Promise<void> {
@@ -64,27 +76,17 @@ export class AuthService {
     try {
       const user = await getUser();
       if (!user) return null;
-
       const updatedUser = await firstValueFrom(this.http.get<User>(`${this.apiUrl}/users/${user.id}`));
-
-      await saveAuthData({
-        token: AuthService.token || '',
-        user: updatedUser
-      });
-
+      await saveAuthData({ token: AuthService.token || '', user: updatedUser });
       return updatedUser;
     } catch (error) {
-      console.error('Error syncing user:', error);
       return await getUser();
     }
   }
 
   async isAuthenticated(): Promise<boolean> {
     const token = await getToken();
-    // Aseguramos que el token estático esté disponible para el interceptor
-    // antes de que el dashboard lance sus peticiones (evita 401 en recargas).
     AuthService.token = token;
     return token !== null;
   }
-
 }

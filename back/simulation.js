@@ -293,10 +293,14 @@ class SimulationEngine {
             }
         }
 
-        // 2. Catch-up de jornadas
-        if (this.state.leagueStarted && this.state.lastJornadaStart) {
+        // 2. Catch-up de jornadas y ciclo de temporada
+        if (this.state.offSeason) {
+            if (this.state.nextSeasonStart && now >= this.state.nextSeasonStart) {
+                await this.startNewSeason();
+            }
+        } else if (this.state.leagueStarted && this.state.lastJornadaStart) {
             let elapsed = now - this.state.lastJornadaStart;
-            while (elapsed >= this.jornadaInterval && this.state.currentJornada < 38) {
+            while (elapsed >= this.jornadaInterval && this.state.currentJornada <= 38 && !this.state.offSeason) {
                 console.log(`[Sim] Catch-up: Avanzando de Jornada ${this.state.currentJornada}...`);
                 await this.advanceJornada();
                 elapsed = now - this.state.lastJornadaStart;
@@ -544,7 +548,10 @@ class SimulationEngine {
                 };
                 this.db.notifications.push(notification);
 
-                await db.query('UPDATE users SET points = $1 WHERE id = $2', [user.points, user.id]);
+                await db.query(
+                    'UPDATE users SET points = $1, season_points = COALESCE(season_points, 0) + $2 WHERE id = $3',
+                    [user.points, pointsEarned, user.id]
+                );
                 await db.query('INSERT INTO notifications (id, user_id, title, message, created_at) VALUES ($1, $2, $3, $4, $5)',
                     [notification.id, notification.userId, notification.title, notification.message, notification.createdAt]);
             }
@@ -552,18 +559,133 @@ class SimulationEngine {
     }
 
     async advanceJornada() {
-        if (this.state.currentJornada < 38) {
-            // Antes de avanzar, nos aseguramos que todos los partidos de la jornada actual estén terminados
-            const currentJornadaMatches = this.allMatches.filter(m => m.jornada === this.state.currentJornada);
-            for (const m of currentJornadaMatches) {
-                if (m.status !== 'finished') {
-                    await this.fastForwardMatch(m);
-                }
+        // Asegurarse que todos los partidos de la jornada actual estén terminados
+        const currentJornadaMatches = this.allMatches.filter(m => m.jornada === this.state.currentJornada);
+        for (const m of currentJornadaMatches) {
+            if (m.status !== 'finished') {
+                await this.fastForwardMatch(m);
             }
+        }
 
+        // Guardar snapshot de clasificación en historial (F3)
+        await this.saveStandingsSnapshot(this.state.currentJornada);
+
+        if (this.state.currentJornada < 38) {
             this.state.currentJornada++;
             this.state.lastJornadaStart = Date.now();
             this.setupCurrentJornadaMatches();
+
+            // Aviso de última jornada
+            if (this.state.currentJornada === 38) {
+                await this.notifyAllUsers(
+                    '¡Última jornada!',
+                    'La temporada ' + (this.state.season || 1) + ' está a punto de terminar. ¡Haz tu última apuesta!'
+                );
+            }
+        } else {
+            // Jornada 38 finalizada → arrancar descanso de temporada
+            await this.endSeason();
+        }
+    }
+
+    async saveStandingsSnapshot(jornada) {
+        try {
+            const standings = this.getStandings();
+            const season = this.state.season || 1;
+            for (let i = 0; i < standings.length; i++) {
+                const t = standings[i];
+                await db.query(`
+                    INSERT INTO standings_history (season, jornada, team_name, position, pts, gf, gc)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    ON CONFLICT (season, jornada, team_name) DO NOTHING
+                `, [season, jornada, t.name, i + 1, t.pts, t.gf, t.gc]);
+            }
+        } catch (err) {
+            console.error('[Sim] Error guardando snapshot de clasificación:', err.message);
+        }
+    }
+
+    async endSeason() {
+        const season = this.state.season || 1;
+        const standings = this.getStandings();
+        const champion = standings[0];
+
+        console.log(`[Sim] Temporada ${season} finalizada. Campeón: ${champion.name}`);
+
+        // Notificar campeón a todos
+        await this.notifyAllUsers(
+            `¡Temporada ${season} finalizada!`,
+            `El campeón es ${champion.name}. La nueva temporada comenzará pronto.`
+        );
+
+        // Notificar a cada usuario su posición final en el ranking
+        try {
+            const users = await db.query('SELECT id, points FROM users ORDER BY points DESC');
+            for (let i = 0; i < users.rows.length; i++) {
+                const u = users.rows[i];
+                await db.query(
+                    'INSERT INTO notifications (id, user_id, title, message, created_at) VALUES ($1, $2, $3, $4, NOW())',
+                    [Date.now() + i, u.id, `Tu posición final — Temporada ${season}`, `Has terminado en el puesto #${i + 1} con ${u.points} puntos.`]
+                );
+            }
+        } catch (err) {
+            console.error('[Sim] Error notificando posiciones:', err.message);
+        }
+
+        // Descanso: 6 horas reales antes de la siguiente temporada
+        const DESCANSO = 6 * 60 * 60 * 1000;
+        this.state.offSeason = true;
+        this.state.nextSeasonStart = Date.now() + DESCANSO;
+        this.state.lastSeason = season;
+        await this.saveData();
+    }
+
+    async startNewSeason() {
+        const newSeason = (this.state.season || 1) + 1;
+        console.log(`[Sim] Iniciando temporada ${newSeason}`);
+
+        // Resetear puntos de temporada en BD
+        await db.query('UPDATE users SET season_points = 0');
+
+        // Resetear estadísticas de equipos
+        for (const t of this.teams) {
+            t.pj = 0; t.pg = 0; t.pe = 0; t.pp = 0; t.gf = 0; t.gc = 0; t.pts = 0;
+            await db.query(
+                'UPDATE teams SET pj=0, pg=0, pe=0, pp=0, gf=0, gc=0, pts=0 WHERE name=$1',
+                [t.name]
+            );
+        }
+
+        // Limpiar partidos anteriores
+        await db.query('DELETE FROM matches');
+        this.allMatches = [];
+
+        this.state.season = newSeason;
+        this.state.offSeason = false;
+        this.state.nextSeasonStart = null;
+        this.state.currentJornada = 1;
+        this.state.leagueStarted = false;
+
+        await this.generateSchedule();
+
+        await this.notifyAllUsers(
+            `¡Temporada ${newSeason} en marcha!`,
+            `Comienza la temporada ${newSeason}. ¡Realiza tus predicciones!`
+        );
+    }
+
+    async notifyAllUsers(title, message) {
+        try {
+            const users = await db.query('SELECT id FROM users');
+            for (const u of users.rows) {
+                const id = Date.now() + Math.round(Math.random() * 1000) + u.id;
+                await db.query(
+                    'INSERT INTO notifications (id, user_id, title, message, created_at) VALUES ($1, $2, $3, $4, NOW()) ON CONFLICT (id) DO NOTHING',
+                    [id, u.id, title, message]
+                );
+            }
+        } catch (err) {
+            console.error('[Sim] Error enviando notificaciones masivas:', err.message);
         }
     }
 

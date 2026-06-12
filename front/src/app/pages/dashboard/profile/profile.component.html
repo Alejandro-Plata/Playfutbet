@@ -1,16 +1,27 @@
 <div class="profile-container">
 
   @if (isLoading) {
-  <div class="loading-state">
-    <p>Cargando perfil...</p>
-  </div>
+  <div class="loading-state"><p>Cargando perfil...</p></div>
   }
 
   @if (!isLoading && userProfile) {
   <div class="profile-card">
+
+    <!-- Avatar con overlay de subida -->
     <div class="avatar-section">
       <div class="avatar-wrapper">
-        <img [src]="userProfile.avatar" [alt]="userProfile.name" class="user-avatar">
+        <img [src]="currentAvatar" [alt]="userProfile.name" class="user-avatar">
+
+        <button class="avatar-overlay" (click)="onAvatarClick()" [disabled]="isUploadingAvatar" title="Cambiar foto">
+          @if (isUploadingAvatar) {
+            <span class="upload-spinner"></span>
+          } @else {
+            <ion-icon name="camera"></ion-icon>
+          }
+        </button>
+        <input id="avatar-input" type="file" accept="image/jpeg,image/png,image/webp"
+               style="display:none" (change)="onAvatarSelected($event)">
+
         @if (userProfile.rank > 0) {
         <div class="rank-badge">
           <ion-icon name="trophy"></ion-icon>
@@ -19,8 +30,18 @@
         }
       </div>
       <h2 class="user-name">{{ userProfile.name }}</h2>
+      @if (userProfile.bio) {
+        <p class="user-bio">{{ userProfile.bio }}</p>
+      }
+      @if (userProfile.favoriteTeam) {
+        <div class="fav-team">
+          <img [src]="getTeamLogo(userProfile.favoriteTeam)" [alt]="userProfile.favoriteTeam" class="fav-logo">
+          <span>{{ userProfile.favoriteTeam }}</span>
+        </div>
+      }
     </div>
 
+    <!-- Puntos -->
     <div class="points-section">
       <div class="points-card">
         <ion-icon name="star"></ion-icon>
@@ -29,8 +50,14 @@
           <span class="points-value">{{ userProfile.points }}</span>
         </div>
       </div>
+      @if ((userProfile.seasonPoints ?? 0) > 0) {
+      <div class="season-points">
+        TEMPORADA ACTUAL: <strong>{{ userProfile.seasonPoints }} pts</strong>
+      </div>
+      }
     </div>
 
+    <!-- Stats -->
     <div class="stats-grid">
       <div class="stat-card">
         <span class="stat-label">APUESTAS</span>
@@ -41,6 +68,92 @@
         <span class="stat-value">{{ (userProfile.winRate * 100).toFixed(1) }}%</span>
       </div>
     </div>
+
+    <!-- Botón editar -->
+    @if (!isEditing) {
+    <button class="edit-btn" (click)="startEditing()">
+      <ion-icon name="pencil"></ion-icon> EDITAR PERFIL
+    </button>
+    }
+
+    <!-- Formulario de edición -->
+    @if (isEditing) {
+    <div class="edit-section">
+      <h3 class="edit-title">EDITAR PERFIL</h3>
+
+      <div class="form-group">
+        <label>NOMBRE DE USUARIO</label>
+        <input type="text" [(ngModel)]="editForm.username" maxlength="20" placeholder="Tu nombre">
+      </div>
+
+      <div class="form-group">
+        <label>BIO (máx. 280 caracteres)</label>
+        <textarea [(ngModel)]="editForm.bio" maxlength="280" rows="3" placeholder="Cuéntanos algo sobre ti..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>EQUIPO FAVORITO</label>
+        <div class="team-selector">
+          @for (team of teamNames; track team) {
+            <button class="team-option" [class.selected]="editForm.favoriteTeam === team"
+                    (click)="editForm.favoriteTeam = team" type="button">
+              <img [src]="getTeamLogo(team)" [alt]="team">
+            </button>
+          }
+          <button class="team-option team-none" [class.selected]="!editForm.favoriteTeam"
+                  (click)="editForm.favoriteTeam = ''" type="button">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <h3 class="edit-title">PRIVACIDAD</h3>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <ion-icon name="lock-closed"></ion-icon>
+          <div>
+            <span class="toggle-label">Perfil privado</span>
+            <span class="toggle-desc">Solo tú verás tu perfil completo</span>
+          </div>
+        </div>
+        <ion-toggle [(ngModel)]="editForm.isPrivate"></ion-toggle>
+      </div>
+
+      <div class="toggle-row" [class.disabled]="editForm.isPrivate">
+        <div class="toggle-info">
+          <ion-icon name="eye"></ion-icon>
+          <div>
+            <span class="toggle-label">Mostrar estadísticas</span>
+            <span class="toggle-desc">Otros pueden ver tus stats</span>
+          </div>
+        </div>
+        <ion-toggle [(ngModel)]="editForm.showStats" [disabled]="editForm.isPrivate"></ion-toggle>
+      </div>
+
+      <div class="toggle-row" [class.disabled]="editForm.isPrivate">
+        <div class="toggle-info">
+          <ion-icon name="eye"></ion-icon>
+          <div>
+            <span class="toggle-label">Mostrar apuestas</span>
+            <span class="toggle-desc">Otros pueden ver tus apuestas recientes</span>
+          </div>
+        </div>
+        <ion-toggle [(ngModel)]="editForm.showBets" [disabled]="editForm.isPrivate"></ion-toggle>
+      </div>
+
+      <div class="edit-actions">
+        <button class="btn-cancel" (click)="cancelEditing()" [disabled]="isSaving">
+          <ion-icon name="close"></ion-icon> CANCELAR
+        </button>
+        <button class="btn-save" (click)="saveProfile()" [disabled]="isSaving">
+          @if (isSaving) { <span class="upload-spinner"></span> GUARDANDO... }
+          @else { <ion-icon name="checkmark"></ion-icon> GUARDAR }
+        </button>
+      </div>
+    </div>
+    }
+
   </div>
   }
 

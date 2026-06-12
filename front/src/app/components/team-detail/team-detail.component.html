@@ -142,6 +142,19 @@
       </div>
     </div>
 
+    <!-- Goals per jornada chart -->
+    @if (goalsChartConfig) {
+    <div class="chart-section">
+      <h2 class="section-title">
+        <ion-icon name="stats-chart"></ion-icon>
+        Goles por Jornada
+      </h2>
+      <div class="chart-card">
+        <app-stat-chart [config]="goalsChartConfig" height="240px" />
+      </div>
+    </div>
+    }
+
     <!-- Players Section -->
     <div class="players-section">
       <h2 class="section-title">

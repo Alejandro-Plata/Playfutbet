@@ -55,6 +55,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/team-detail/team-detail.component').then((m) => m.TeamDetailComponent),
       },
       {
+        path: 'user/:id',
+        loadComponent: () => import('./pages/dashboard/public-profile/public-profile.component').then((m) => m.PublicProfileComponent),
+      },
+      {
         path: '',
         redirectTo: 'historial',
         pathMatch: 'full',

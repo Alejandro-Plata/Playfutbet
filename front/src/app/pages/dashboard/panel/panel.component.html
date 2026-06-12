@@ -1,5 +1,18 @@
 <div class="history-container">
 
+  <!-- Banner de descanso entre temporadas -->
+  @if (offSeasonBanner && simState) {
+  <div class="season-banner">
+    <div class="season-banner-content">
+      <span class="season-emoji">🏆</span>
+      <div>
+        <strong>Temporada {{ simState.season }} finalizada</strong>
+        <span class="season-countdown">Nueva temporada en: {{ countdown }}</span>
+      </div>
+    </div>
+  </div>
+  }
+
   <header class="history-header">
     <div class="title-group">
       <h1>HISTORIAL DE APUESTAS</h1>
@@ -38,6 +51,24 @@
       </div>
     </div>
   </div>
+
+  <!-- Gráficas de estadísticas -->
+  @if (pointsChartConfig || donutChartConfig) {
+  <div class="charts-section">
+    @if (pointsChartConfig) {
+    <div class="chart-card">
+      <h3 class="chart-title">EVOLUCIÓN DE PUNTOS</h3>
+      <app-stat-chart [config]="pointsChartConfig" height="180px"></app-stat-chart>
+    </div>
+    }
+    @if (donutChartConfig) {
+    <div class="chart-card">
+      <h3 class="chart-title">DISTRIBUCIÓN DE APUESTAS</h3>
+      <app-stat-chart [config]="donutChartConfig" height="180px"></app-stat-chart>
+    </div>
+    }
+  </div>
+  }
 
   <div class="predictions-section">
     <h2 class="section-title">ÚLTIMAS PREDICCIONES</h2>

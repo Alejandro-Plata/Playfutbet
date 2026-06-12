@@ -91,6 +91,36 @@ input {
   }
 }
 
+.google-btn-wrapper {
+  width: 100%;
+  margin-bottom: 1.25rem;
+  min-height: 44px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  color: #888;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: #000;
+  }
+}
+
 .action-btn {
   width: 100%;
   background: var(--c-yellow);

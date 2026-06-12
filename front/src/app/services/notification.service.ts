@@ -10,29 +10,28 @@ import { Notification } from '../types/types';
 export class NotificationService {
 
     private apiUrl = API_URL;
-
-
-    private alertSubject = new Subject<{ message: string, type: 'success' | 'error' | 'info' }>();
+    private alertSubject = new Subject<{ message: string; type: 'success' | 'error' | 'info' }>();
     alert$ = this.alertSubject.asObservable();
 
     constructor(private http: HttpClient) { }
 
     async getUserNotifications(userId: number): Promise<Notification[]> {
-        try {
-            return await firstValueFrom(this.http.get<Notification[]>(`${this.apiUrl}/notifications/user/${userId}`));
-        } catch (error) {
-            console.error('Error en getUserNotifications:', error);
-            throw error;
-        }
+        return firstValueFrom(this.http.get<Notification[]>(`${this.apiUrl}/notifications/user/${userId}`));
+    }
+
+    async getUnreadCount(userId: number): Promise<number> {
+        const res = await firstValueFrom(
+            this.http.get<{ count: number }>(`${this.apiUrl}/notifications/user/${userId}/unread-count`)
+        );
+        return res.count;
+    }
+
+    async markAsRead(notifId: number): Promise<void> {
+        await firstValueFrom(this.http.patch(`${this.apiUrl}/notifications/${notifId}/read`, {}));
     }
 
     async deleteNotification(id: number): Promise<void> {
-        try {
-            await firstValueFrom(this.http.delete<void>(`${this.apiUrl}/notifications/${id}`));
-        } catch (error) {
-            console.error('Error en deleteNotification:', error);
-            throw error;
-        }
+        await firstValueFrom(this.http.delete<void>(`${this.apiUrl}/notifications/${id}`));
     }
 
     showAlert(message: string, type: 'success' | 'error' | 'info' = 'info') {

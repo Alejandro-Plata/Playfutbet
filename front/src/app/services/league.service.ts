@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { API_URL } from '../utils/consts';
-import { TeamStanding, Player } from '../types/types';
+import { TeamStanding, Player, SimulationState } from '../types/types';
 
 @Injectable({
     providedIn: 'root',
@@ -38,5 +38,16 @@ export class LeagueService {
             console.error('Error en getTeamPlayers:', error);
             throw error;
         }
+    }
+
+    async getSimulationState(): Promise<SimulationState> {
+        return firstValueFrom(this.http.get<SimulationState>(`${this.apiUrl}/simulation/state`));
+    }
+
+    async getStandingsHistory(team?: string): Promise<any[]> {
+        const url = team
+            ? `${this.apiUrl}/league/standings-history?team=${encodeURIComponent(team)}`
+            : `${this.apiUrl}/league/standings-history`;
+        return firstValueFrom(this.http.get<any[]>(url));
     }
 }

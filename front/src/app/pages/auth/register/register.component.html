@@ -3,13 +3,20 @@
     <h2>Regístrate ahora</h2>
   </div>
 
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <!-- Botón de Google GIS -->
+  <div id="google-btn-register" class="google-btn-wrapper"></div>
 
+  <div class="divider"><span>o con email</span></div>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="input-group">
       <label>USUARIO</label>
       <input type="text" formControlName="username" placeholder="Jude">
       @if(registerForm.get('username')?.hasError('required') && registerForm.get('username')?.touched) {
-      <span class="error-msg">El usuario está vacío</span>
+        <span class="error-msg">El usuario está vacío</span>
+      }
+      @if(registerForm.get('username')?.hasError('minlength') && registerForm.get('username')?.touched) {
+        <span class="error-msg">Mínimo 3 caracteres</span>
       }
     </div>
 
@@ -17,31 +24,49 @@
       <label>DIRECCIÓN DE EMAIL</label>
       <input type="email" formControlName="email" placeholder="ejemplo@futbet.com">
       @if(registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
-      <span class="error-msg">El email está vacío</span>
+        <span class="error-msg">El email está vacío</span>
       }
       @if(registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
-      <span class="error-msg">Formato de email inválido</span>
+        <span class="error-msg">Formato de email inválido</span>
       }
     </div>
 
     <div class="row-inputs">
       <div class="input-group">
         <label>CONTRASEÑA</label>
-        <input type="password" formControlName="password" placeholder="">
-        @if(registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
-        <span class="error-msg">La contraseña está vacía</span>
+        <input type="password" formControlName="password" placeholder="Mín. 8 caracteres">
+
+        <!-- Indicador de fortaleza -->
+        @if (passwordCtrl.value) {
+          <div class="password-strength">
+            <div class="strength-bar" [class]="'level-' + passwordStrengthLevel">
+              <div class="bar-fill"></div>
+            </div>
+            <span class="strength-label">
+              @if (passwordStrengthLevel <= 1) { Débil }
+              @else if (passwordStrengthLevel === 2) { Aceptable }
+              @else if (passwordStrengthLevel === 3) { Buena }
+              @else { Fuerte }
+            </span>
+          </div>
         }
-        @if(registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
-        <span class="error-msg">Mínimo 6 caracteres</span>
+
+        @if(passwordCtrl.hasError('minlength') && passwordCtrl.touched) {
+          <span class="error-msg">Mínimo 8 caracteres</span>
+        }
+        @if(passwordCtrl.hasError('noLetter') && passwordCtrl.touched) {
+          <span class="error-msg">Debe incluir al menos una letra</span>
+        }
+        @if(passwordCtrl.hasError('noNumber') && passwordCtrl.touched) {
+          <span class="error-msg">Debe incluir al menos un número</span>
         }
       </div>
 
       <div class="input-group">
         <label>CONFIRMAR CONTRASEÑA</label>
         <input type="password" formControlName="confirmPassword" placeholder="">
-        @if(registerForm.get('confirmPassword')?.hasError('required') &&
-        registerForm.get('confirmPassword')?.touched) {
-        <span class="error-msg">Confirma tu contraseña</span>
+        @if(registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched) {
+          <span class="error-msg">Confirma tu contraseña</span>
         }
       </div>
     </div>

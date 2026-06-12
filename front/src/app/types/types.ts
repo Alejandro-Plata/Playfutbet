@@ -23,11 +23,17 @@ export type CardType = 'yellow' | 'red';
 export interface User {
   id: number;
   username: string;
-  email: string;
+  email?: string;
   points: number;
   avatar: string;
   rank?: number;
   token?: string;
+  bio?: string;
+  favoriteTeam?: string | null;
+  isPrivate?: boolean;
+  showBets?: boolean;
+  showStats?: boolean;
+  seasonPoints?: number;
 }
 
 export interface MatchEvent {
@@ -110,6 +116,9 @@ export interface SimulationState {
   leagueStarted: boolean;
   lastJornadaStart: number | null;
   jornadas?: any[];
+  offSeason?: boolean;
+  nextSeasonStart?: number | null;
+  season?: number;
 }
 
 export interface Notification {
@@ -156,7 +165,31 @@ export interface UserRanking {
 
 export interface UpdateProfileDto {
   username?: string;
-  avatar?: string;
+  bio?: string;
+  favoriteTeam?: string;
+  isPrivate?: boolean;
+  showBets?: boolean;
+  showStats?: boolean;
+}
+
+export interface UserStats {
+  totalBets: number;
+  exactHits: number;
+  winnerHits: number;
+  winRate: number;
+  currentStreak: number;
+  bestStreak: number;
+  pointsByJornada: { jornada: number; points: number; cumulative: number }[];
+  resultDistribution: { exact: number; winner: number; miss: number };
+}
+
+export interface SeasonState {
+  currentJornada: number;
+  leagueStarted: boolean;
+  offSeason?: boolean;
+  nextSeasonStart?: number | null;
+  season?: number;
+  lastSeason?: number;
 }
 
 export interface ChatMessageDto {
@@ -179,6 +212,12 @@ export interface UserProfile {
   rank: number;
   totalBets: number;
   winRate: number;
+  bio?: string;
+  favoriteTeam?: string | null;
+  isPrivate?: boolean;
+  showBets?: boolean;
+  showStats?: boolean;
+  seasonPoints?: number;
 }
 
 export interface DisplayMatch {

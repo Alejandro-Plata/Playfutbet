@@ -67,6 +67,24 @@
         <span>Descenso</span>
       </div>
     </div>
+
+    <!-- Evolución de posición -->
+    <div class="evolution-section">
+      <h3 class="evolution-title">EVOLUCIÓN DE POSICIÓN</h3>
+      <select class="team-select" [(ngModel)]="selectedTeam" (ngModelChange)="onTeamSelect($event)">
+        <option value="">Selecciona un equipo…</option>
+        @for (name of teamNames; track name) {
+          <option [value]="name">{{ name }}</option>
+        }
+      </select>
+      @if (isChartLoading) {
+        <div class="chart-loading">Cargando…</div>
+      } @else if (positionChartConfig) {
+        <app-stat-chart [config]="positionChartConfig" height="260px" />
+      } @else if (selectedTeam) {
+        <div class="chart-loading">Sin datos de historial aún</div>
+      }
+    </div>
   </div>
 
   <div class="matchday-section">

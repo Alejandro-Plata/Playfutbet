@@ -1,9 +1,24 @@
 <div class="ranking-container">
 
+  <!-- Pestañas temporada/histórico -->
+  <div class="ranking-tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'total'" (click)="loadRanking('total')">
+      HISTÓRICO
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'season'" (click)="loadRanking('season')">
+      TEMPORADA
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-state"><p>Cargando...</p></div>
+  }
+
+  @if (!isLoading) {
   <div class="podium-section">
     <div class="podium">
       @for (player of getPodiumOrder(); track player.id; let i = $index) {
-      <div class="podium-place" [class]="'place-' + player.position">
+      <div class="podium-place" [class]="'place-' + player.position" (click)="openProfile(player.id)" style="cursor:pointer">
         <div class="medal-icon">
           @if (player.position === 1) {
           <ion-icon name="trophy" class="gold"></ion-icon>
@@ -13,7 +28,6 @@
           <ion-icon name="medal" class="bronze"></ion-icon>
           }
         </div>
-
         <div class="podium-avatar">
           <img [src]="player.avatar" [alt]="player.username">
           <span class="position-badge">{{ player.position }}</span>
@@ -25,7 +39,6 @@
             <span>{{ player.points }}</span>
           </div>
         </div>
-
         <div class="pedestal">
           <span class="position-number">{{ player.position }}</span>
         </div>
@@ -33,32 +46,29 @@
       }
     </div>
   </div>
+
   <div class="players-list">
     <div class="list-header">
       <h3>CLASIFICACIÓN COMPLETA</h3>
     </div>
-
     <div class="players-table">
       @for (player of getAllPlayers(); track player.id) {
-      <div class="player-row" [class.highlight-podium]="player.position <= 3">
-
+      <div class="player-row" [class.highlight-podium]="player.position <= 3" (click)="openProfile(player.id)" style="cursor:pointer">
         <div class="position-cell">
           <span class="position-number">{{ player.position }}</span>
         </div>
-
         <div class="player-info">
           <img [src]="player.avatar" [alt]="player.username" class="avatar">
           <span class="username">{{ player.username }}</span>
         </div>
-
         <div class="points-cell">
           <ion-icon name="star"></ion-icon>
           <span class="points">{{ player.points }}</span>
         </div>
-
       </div>
       }
     </div>
   </div>
+  }
 
 </div>
