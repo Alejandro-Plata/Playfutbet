@@ -7,6 +7,7 @@ import { addIcons } from 'ionicons';
 import { arrowForward, logoGoogle } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth-service';
 import { NotificationService } from '../../../services/notification.service';
+import { GOOGLE_CLIENT_ID } from '../../../utils/consts';
 
 declare const google: any;
 
@@ -23,7 +24,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   loading = false;
   googleLoading = false;
 
-  private readonly GOOGLE_CLIENT_ID = ''; // Rellenar con el Client ID de Google Cloud Console
+  private readonly GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
 
   constructor(
     private fb: FormBuilder,
