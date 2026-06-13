@@ -54,6 +54,49 @@ async function migrate() {
         await client.query(`ALTER TABLE users ALTER COLUMN password DROP NOT NULL`);
         console.log('✓ F6: columna google_id y password nullable');
 
+        // R0: Tendencias de ranking (ranking_history)
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS ranking_history (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                season INTEGER NOT NULL,
+                jornada INTEGER NOT NULL,
+                position INTEGER NOT NULL,
+                season_position INTEGER NOT NULL,
+                UNIQUE(user_id, season, jornada)
+            )
+        `);
+        console.log('✓ R0: tabla ranking_history creada');
+
+        // R3: Conversaciones privadas
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS conversations (
+                id SERIAL PRIMARY KEY,
+                user_a INTEGER NOT NULL REFERENCES users(id),
+                user_b INTEGER NOT NULL REFERENCES users(id),
+                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_a, user_b),
+                CHECK (user_a < user_b)
+            )
+        `);
+        console.log('✓ R3: tabla conversations creada');
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS private_messages (
+                id SERIAL PRIMARY KEY,
+                conversation_id INTEGER NOT NULL REFERENCES conversations(id),
+                sender_id INTEGER NOT NULL REFERENCES users(id),
+                text TEXT NOT NULL,
+                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                read_at TIMESTAMPTZ
+            )
+        `);
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_pm_conversation
+            ON private_messages(conversation_id, created_at)
+        `);
+        console.log('✓ R3: tabla private_messages creada');
+
         console.log('\n✅ Todas las migraciones completadas con éxito.');
     } catch (error) {
         console.error('❌ Error en migración:', error);

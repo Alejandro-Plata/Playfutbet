@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { grid, trophy, barChart, person, time, logOut, search, notifications, football } from 'ionicons/icons';
+import { grid, trophy, barChart, person, time, logOut, search, notifications, football, chatbubbles } from 'ionicons/icons';
 import { NotificationsComponent } from '../../components/notifications/notifications.component';
 import { User } from '../../types/types';
 import { AuthService } from '../../services/auth-service';
+import { ConversationService } from '../../services/conversation.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -16,12 +17,17 @@ import { filter } from 'rxjs/operators';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   pageTitle: string = 'PANEL DE CONTROL';
+  private pollTimer: any;
 
-  constructor(private router: Router, private authService: AuthService) {
-    addIcons({ grid, trophy, barChart, person, time, logOut, search, notifications, football });
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    public convService: ConversationService,
+  ) {
+    addIcons({ grid, trophy, barChart, person, time, logOut, search, notifications, football, chatbubbles });
   }
 
   updateTitle(url: string) {
@@ -32,18 +38,24 @@ export class DashboardComponent implements OnInit {
     else if (url.includes('/profile')) this.pageTitle = 'PERFIL';
     else if (url.includes('/match')) this.pageTitle = 'DETALLE DEL PARTIDO';
     else if (url.includes('/team')) this.pageTitle = 'DETALLE DEL EQUIPO';
+    else if (url.includes('/messages')) this.pageTitle = 'MENSAJES';
+    else if (url.includes('/user')) this.pageTitle = 'PERFIL DE JUGADOR';
     else this.pageTitle = 'PANEL DE CONTROL';
   }
 
   async ngOnInit() {
     await this.loadUserData();
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd) // Solo nos quedamos con los eventos de navegación
+      filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
       this.loadUserData();
       this.updateTitle(event.url);
     });
+    this.convService.refreshUnread();
+    this.pollTimer = setInterval(() => this.convService.refreshUnread(), 30000);
   }
+
+  ngOnDestroy() { clearInterval(this.pollTimer); }
 
   async loadUserData() {
     this.currentUser = await this.authService.syncUser();
@@ -55,6 +67,10 @@ export class DashboardComponent implements OnInit {
 
   getUserName(): string {
     return this.currentUser?.username?.toUpperCase() || 'USUARIO';
+  }
+
+  get unreadCount(): number {
+    return this.convService.unreadCount();
   }
 
   async logout() {

@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForward, logoGoogle } from 'ionicons/icons';
@@ -26,9 +26,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   private readonly GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
 
+  private returnUrl = '/dashboard/panel';
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private notificationService: NotificationService,
   ) {
@@ -41,6 +44,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     setTimeout(() => this.animate = true, 100);
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard/panel';
   }
 
   ngAfterViewInit() {
@@ -75,7 +79,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.googleLoading = true;
     try {
       await this.authService.loginWithGoogle(response.credential);
-      this.router.navigate(['/dashboard/panel']);
+      this.router.navigateByUrl(this.returnUrl);
     } catch (error: any) {
       this.notificationService.showAlert(error.message || 'Error con Google', 'error');
     } finally {
@@ -89,7 +93,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.loading = true;
     try {
       await this.authService.login({ email, password });
-      this.router.navigate(['/dashboard/panel']);
+      this.router.navigateByUrl(this.returnUrl);
     } catch (error: any) {
       this.notificationService.showAlert(error.message || 'Error al iniciar sesión', 'error');
     } finally {

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
+import { authGuard, authChildGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -24,6 +24,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     canActivate: [authGuard],
+    canActivateChild: [authChildGuard],
     loadComponent: () => import('./layouts/dashboard/dashboard.component').then((m) => m.DashboardComponent),
     children: [
       {
@@ -43,11 +44,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/ranking/ranking.component').then((m) => m.RankingComponent),
       },
       {
-        path: 'profile', // Renamed from 'perfil'
+        path: 'profile',
         loadComponent: () => import('./pages/dashboard/profile/profile.component').then((m) => m.ProfileComponent),
       },
       {
-        path: 'match/:id', // Moved inside dashboard
+        path: 'match/:id',
         loadComponent: () => import('./pages/dashboard/match-detail/match-detail.component').then((m) => m.MatchDetailComponent),
       },
       {
@@ -59,6 +60,14 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/public-profile/public-profile.component').then((m) => m.PublicProfileComponent),
       },
       {
+        path: 'messages',
+        loadComponent: () => import('./pages/dashboard/messages/messages.component').then((m) => m.MessagesComponent),
+      },
+      {
+        path: 'messages/:id',
+        loadComponent: () => import('./pages/dashboard/conversation/conversation.component').then((m) => m.ConversationComponent),
+      },
+      {
         path: '',
         redirectTo: 'historial',
         pathMatch: 'full',
@@ -66,7 +75,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: '**', // Fallback
+    path: '**',
     redirectTo: 'login',
     pathMatch: 'full',
   },

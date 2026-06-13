@@ -161,6 +161,33 @@ export interface UserRanking {
   username: string;
   points: number;
   avatar: string;
+  favoriteTeam?: string | null;
+  trend?: number | null;
+}
+
+export interface Conversation {
+  id: number;
+  otherUser: {
+    id: number;
+    username: string;
+    avatar: string;
+  };
+  lastMessage?: {
+    text: string;
+    createdAt: string;
+    isMe: boolean;
+  } | null;
+  unreadCount: number;
+}
+
+export interface PrivateMessage {
+  id: number;
+  conversationId: number;
+  senderId: number;
+  text: string;
+  createdAt: string;
+  readAt: string | null;
+  isMe: boolean;
 }
 
 export interface UpdateProfileDto {

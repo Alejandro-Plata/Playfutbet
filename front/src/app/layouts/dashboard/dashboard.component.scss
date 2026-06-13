@@ -120,6 +120,20 @@
     }
 }
 
+.messages-item { position: relative; }
+
+.nav-badge {
+    margin-left: auto;
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 900;
+    border-radius: 50px;
+    padding: 0.1rem 0.45rem;
+    line-height: 1.4;
+    border: 2px solid #fff;
+}
+
 .logout-section {
     padding: 1.5rem;
     border-top: 3px solid #000;

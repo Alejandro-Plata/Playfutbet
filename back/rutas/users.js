@@ -29,10 +29,34 @@ const updateProfileSchema = z.object({
     showStats: z.boolean().optional(),
 });
 
-// GET /api/leaderboard — puntaje total
-router.get('/leaderboard', async (req, res) => {
+// GET /api/users/leaderboard — puntaje total (autenticado)
+router.get('/leaderboard', authenticateToken, async (req, res) => {
     try {
-        const result = await db.query('SELECT id, username, points, avatar FROM users ORDER BY points DESC');
+        const result = await db.query(`
+            WITH latest_jornada AS (
+                SELECT season, MAX(jornada) AS jornada
+                FROM ranking_history
+                GROUP BY season
+                ORDER BY season DESC
+                LIMIT 1
+            ),
+            current_pos AS (
+                SELECT id, username, points, avatar, favorite_team,
+                       ROW_NUMBER() OVER (ORDER BY points DESC) AS position
+                FROM users
+            ),
+            prev_pos AS (
+                SELECT rh.user_id, rh.position
+                FROM ranking_history rh
+                JOIN latest_jornada lj ON rh.season = lj.season AND rh.jornada = lj.jornada
+            )
+            SELECT cp.id, cp.username, cp.points, cp.avatar,
+                   cp.favorite_team AS "favoriteTeam",
+                   (pp.position - cp.position::int)::int AS trend
+            FROM current_pos cp
+            LEFT JOIN prev_pos pp ON pp.user_id = cp.id
+            ORDER BY cp.position ASC
+        `);
         res.json(result.rows);
     } catch (error) {
         console.error('Error getting leaderboard:', error);
@@ -40,11 +64,35 @@ router.get('/leaderboard', async (req, res) => {
     }
 });
 
-// GET /api/leaderboard/season — puntaje de temporada actual
-router.get('/leaderboard/season', async (req, res) => {
+// GET /api/users/leaderboard/season — puntaje de temporada (autenticado)
+router.get('/leaderboard/season', authenticateToken, async (req, res) => {
     try {
-        const result = await db.query('SELECT id, username, season_points, avatar FROM users ORDER BY season_points DESC');
-        res.json(result.rows.map(u => ({ ...u, points: u.season_points })));
+        const result = await db.query(`
+            WITH latest_jornada AS (
+                SELECT season, MAX(jornada) AS jornada
+                FROM ranking_history
+                GROUP BY season
+                ORDER BY season DESC
+                LIMIT 1
+            ),
+            current_pos AS (
+                SELECT id, username, season_points AS points, avatar, favorite_team,
+                       ROW_NUMBER() OVER (ORDER BY season_points DESC) AS position
+                FROM users
+            ),
+            prev_pos AS (
+                SELECT rh.user_id, rh.season_position AS position
+                FROM ranking_history rh
+                JOIN latest_jornada lj ON rh.season = lj.season AND rh.jornada = lj.jornada
+            )
+            SELECT cp.id, cp.username, cp.points, cp.avatar,
+                   cp.favorite_team AS "favoriteTeam",
+                   (pp.position - cp.position::int)::int AS trend
+            FROM current_pos cp
+            LEFT JOIN prev_pos pp ON pp.user_id = cp.id
+            ORDER BY cp.position ASC
+        `);
+        res.json(result.rows);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener ranking de temporada' });
     }

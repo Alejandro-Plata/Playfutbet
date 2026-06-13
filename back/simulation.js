@@ -569,6 +569,8 @@ class SimulationEngine {
 
         // Guardar snapshot de clasificación en historial (F3)
         await this.saveStandingsSnapshot(this.state.currentJornada);
+        // Guardar snapshot de ranking de usuarios (R5)
+        await this.saveRankingSnapshot(this.state.currentJornada);
 
         if (this.state.currentJornada < 38) {
             this.state.currentJornada++;
@@ -585,6 +587,27 @@ class SimulationEngine {
         } else {
             // Jornada 38 finalizada → arrancar descanso de temporada
             await this.endSeason();
+        }
+    }
+
+    async saveRankingSnapshot(jornada) {
+        try {
+            const season = this.state.season || 1;
+            const usersRes = await db.query('SELECT id, points, season_points FROM users ORDER BY points DESC');
+            const byTotal = usersRes.rows;
+            const bySeason = [...byTotal].sort((a, b) => b.season_points - a.season_points);
+
+            for (let i = 0; i < byTotal.length; i++) {
+                const u = byTotal[i];
+                const seasonPos = bySeason.findIndex(s => s.id === u.id) + 1;
+                await db.query(`
+                    INSERT INTO ranking_history (user_id, season, jornada, position, season_position)
+                    VALUES ($1, $2, $3, $4, $5)
+                    ON CONFLICT (user_id, season, jornada) DO NOTHING
+                `, [u.id, season, jornada, i + 1, seasonPos]);
+            }
+        } catch (err) {
+            console.error('[Sim] Error guardando snapshot de ranking:', err.message);
         }
     }
 

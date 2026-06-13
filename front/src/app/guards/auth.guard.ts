@@ -1,16 +1,15 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, CanActivateChildFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth-service';
 
-/**
- * Protege las rutas privadas: si no hay sesión válida, redirige a /login.
- * Al estar en la ruta padre `dashboard`, cubre también todas sus hijas
- * (acceso directo por URL incluido).
- */
-export const authGuard: CanActivateFn = async () => {
+const checkAuth = async (state: RouterStateSnapshot): Promise<boolean | ReturnType<Router['createUrlTree']>> => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
     const autenticado = await authService.isAuthenticated();
-    return autenticado ? true : router.createUrlTree(['/login']);
+    if (autenticado) return true;
+    return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
 };
+
+export const authGuard: CanActivateFn = async (_route, state) => checkAuth(state);
+export const authChildGuard: CanActivateChildFn = async (_route, state) => checkAuth(state);

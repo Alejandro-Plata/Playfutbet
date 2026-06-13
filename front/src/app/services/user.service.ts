@@ -33,6 +33,10 @@ export class UserService {
         return firstValueFrom(this.http.get<UserStats>(`${this.apiUrl}/users/${userId}/stats`));
     }
 
+    async getPublicBets(userId: number): Promise<any[]> {
+        return firstValueFrom(this.http.get<any[]>(`${this.apiUrl}/users/${userId}/bets/public`));
+    }
+
     async uploadAvatar(userId: number, file: File): Promise<{ avatar: string }> {
         const formData = new FormData();
         formData.append('avatar', file);

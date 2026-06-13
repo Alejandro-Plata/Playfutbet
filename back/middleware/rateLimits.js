@@ -24,6 +24,14 @@ const limiteChat = rateLimit({
     message: { error: 'Demasiados mensajes. Espera un momento.' },
 });
 
+const limiteConv = rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Demasiados mensajes. Espera un momento.' },
+});
+
 const limiteGeneral = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 300,
@@ -32,4 +40,4 @@ const limiteGeneral = rateLimit({
     message: { error: 'Demasiadas peticiones. Inténtalo más tarde.' },
 });
 
-module.exports = { limiteAuth, limiteAvatar, limiteChat, limiteGeneral };
+module.exports = { limiteAuth, limiteAvatar, limiteChat, limiteConv, limiteGeneral };

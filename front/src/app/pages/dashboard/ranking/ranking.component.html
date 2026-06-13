@@ -10,65 +10,268 @@
     </button>
   </div>
 
+  <!-- F2 – Buscador -->
+  <div class="search-bar">
+    <div class="search-input-wrap">
+      <ion-icon name="search" class="search-icon"></ion-icon>
+      <input
+        type="text"
+        placeholder="Buscar jugador..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+        class="search-input"
+      />
+      @if (searchQuery) {
+        <button class="clear-btn" (click)="clearSearch()">
+          <ion-icon name="close"></ion-icon>
+        </button>
+      }
+    </div>
+    @if (currentUser?.favoriteTeam) {
+      <button class="team-chip" [class.active]="filterMyTeam" (click)="toggleMyTeam()">
+        🏟️ Mi equipo
+      </button>
+    }
+  </div>
+
   @if (isLoading) {
     <div class="loading-state"><p>Cargando...</p></div>
   }
 
   @if (!isLoading) {
-  <div class="podium-section">
-    <div class="podium">
-      @for (player of getPodiumOrder(); track player.id; let i = $index) {
-      <div class="podium-place" [class]="'place-' + player.position" (click)="openProfile(player.id)" style="cursor:pointer">
-        <div class="medal-icon">
-          @if (player.position === 1) {
-          <ion-icon name="trophy" class="gold"></ion-icon>
-          } @else if (player.position === 2) {
-          <ion-icon name="medal" class="silver"></ion-icon>
-          } @else {
-          <ion-icon name="medal" class="bronze"></ion-icon>
-          }
-        </div>
-        <div class="podium-avatar">
-          <img [src]="player.avatar" [alt]="player.username">
-          <span class="position-badge">{{ player.position }}</span>
-        </div>
-        <div class="podium-info">
-          <h3 class="username">{{ player.username }}</h3>
-          <div class="points">
-            <ion-icon name="star"></ion-icon>
-            <span>{{ player.points }}</span>
+
+    <!-- Podio (oculto al buscar) -->
+    @if (showPodium) {
+    <div class="podium-section">
+      <div class="podium">
+        @for (player of getPodiumOrder(); track player.id; let i = $index) {
+        <div class="podium-place" [class]="'place-' + player.position" (click)="openSheet(player)" style="cursor:pointer">
+          <div class="medal-icon">
+            @if (player.position === 1) {
+            <ion-icon name="trophy" class="gold"></ion-icon>
+            } @else if (player.position === 2) {
+            <ion-icon name="medal" class="silver"></ion-icon>
+            } @else {
+            <ion-icon name="medal" class="bronze"></ion-icon>
+            }
+          </div>
+          <div class="podium-avatar">
+            <img [src]="player.avatar" [alt]="player.username">
+            <span class="position-badge">{{ player.position }}</span>
+          </div>
+          <div class="podium-info">
+            <h3 class="username">{{ player.username }}</h3>
+            <div class="points">
+              <ion-icon name="star"></ion-icon>
+              <span>{{ player.points }}</span>
+            </div>
+          </div>
+          <div class="pedestal">
+            <span class="position-number">{{ player.position }}</span>
           </div>
         </div>
-        <div class="pedestal">
-          <span class="position-number">{{ player.position }}</span>
-        </div>
+        }
       </div>
-      }
     </div>
-  </div>
+    }
 
-  <div class="players-list">
-    <div class="list-header">
-      <h3>CLASIFICACIÓN COMPLETA</h3>
-    </div>
-    <div class="players-table">
-      @for (player of getAllPlayers(); track player.id) {
-      <div class="player-row" [class.highlight-podium]="player.position <= 3" (click)="openProfile(player.id)" style="cursor:pointer">
-        <div class="position-cell">
-          <span class="position-number">{{ player.position }}</span>
-        </div>
-        <div class="player-info">
-          <img [src]="player.avatar" [alt]="player.username" class="avatar">
-          <span class="username">{{ player.username }}</span>
-        </div>
-        <div class="points-cell">
-          <ion-icon name="star"></ion-icon>
-          <span class="points">{{ player.points }}</span>
-        </div>
+    <!-- Lista completa -->
+    <div class="players-list">
+      <div class="list-header">
+        <h3>
+          @if (searchQuery || filterMyTeam) {
+            RESULTADOS ({{ filteredPlayers.length }})
+          } @else {
+            CLASIFICACIÓN COMPLETA
+          }
+        </h3>
       </div>
-      }
+      <div class="players-table">
+
+        @if (filteredPlayers.length === 0) {
+          <div class="empty-search">
+            <p>Ningún jugador coincide con <strong>«{{ searchQuery }}»</strong></p>
+          </div>
+        }
+
+        @for (player of filteredPlayers; track player.id) {
+        <div class="player-row"
+             [class.highlight-podium]="player.position <= 3"
+             [class.highlight-me]="highlightedId === player.id"
+             [id]="'player-row-' + player.id"
+             (click)="openSheet(player)"
+             style="cursor:pointer">
+          <div class="position-cell">
+            <span class="position-number">{{ player.position }}</span>
+          </div>
+          <div class="player-info">
+            <img [src]="player.avatar" [alt]="player.username" class="avatar">
+            <div class="player-meta">
+              <span class="username">{{ player.username }}</span>
+              <span class="trend-badge" [class]="trendClass(player.trend)">
+                {{ trendLabel(player.trend) }}
+              </span>
+            </div>
+          </div>
+          <div class="points-cell">
+            <ion-icon name="star"></ion-icon>
+            <span class="points">{{ player.points }}</span>
+          </div>
+        </div>
+        }
+      </div>
     </div>
-  </div>
+
+    <!-- F1 – Tu posición (sticky) -->
+    @if (myPlayer) {
+    <div class="my-position-bar" (click)="scrollToMyRow()">
+      <div class="my-pos-left">
+        <span class="my-rank">#{{ myPlayer.position }}</span>
+        <img [src]="myPlayer.avatar" class="my-avatar" [alt]="myPlayer.username">
+        <span class="my-name">TÚ</span>
+        @if (myPlayer.trend != null && myPlayer.trend !== 0) {
+          <span class="my-trend" [class]="trendClass(myPlayer.trend)">{{ trendLabel(myPlayer.trend) }}</span>
+        }
+      </div>
+      <div class="my-pos-right">
+        <span class="my-pts">{{ myPlayer.points }} pts</span>
+        @if (myMilestone) {
+          <span class="my-milestone">{{ myMilestone }}</span>
+        }
+        <ion-icon name="arrow-up" class="scroll-icon"></ion-icon>
+      </div>
+    </div>
+    }
+
   }
 
 </div>
+
+<!-- F4 – Bottom sheet -->
+@if (showSheet && selectedPlayer) {
+  <div class="sheet-backdrop" (click)="closeSheet()"></div>
+  <div class="sheet-panel" [class.open]="showSheet">
+    <div class="sheet-handle"></div>
+
+    <div class="sheet-header">
+      <img [src]="selectedPlayer.avatar" class="sheet-avatar" [alt]="selectedPlayer.username">
+      <div class="sheet-user-info">
+        <div class="sheet-name">{{ selectedPlayer.username }}</div>
+        <div class="sheet-rank">
+          <span class="rank-badge">#{{ selectedPlayer.position }}</span>
+          <span class="trend-badge" [class]="trendClass(selectedPlayer.trend)">{{ trendLabel(selectedPlayer.trend) }}</span>
+        </div>
+        @if (selectedPlayer.favoriteTeam) {
+          <div class="sheet-team">🏟️ {{ selectedPlayer.favoriteTeam }}</div>
+        }
+      </div>
+      <button class="sheet-close" (click)="closeSheet()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </div>
+
+    @if (loadingStats) {
+      <div class="sheet-loading">Cargando estadísticas...</div>
+    }
+
+    @if (!loadingStats && sheetStats) {
+    <div class="sheet-stats">
+      <div class="stat-card">
+        <span class="stat-val">{{ selectedPlayer.points }}</span>
+        <span class="stat-lbl">PUNTOS</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-val">{{ (sheetStats.winRate * 100).toFixed(0) }}%</span>
+        <span class="stat-lbl">ACIERTO</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-val">{{ sheetStats.exactHits }}</span>
+        <span class="stat-lbl">EXACTOS</span>
+      </div>
+      @if (sheetStats.currentStreak >= 3) {
+      <div class="stat-card streak">
+        <span class="stat-val">🔥{{ sheetStats.currentStreak }}</span>
+        <span class="stat-lbl">RACHA</span>
+      </div>
+      }
+    </div>
+    }
+
+    <div class="sheet-actions">
+      <button class="action-btn primary" (click)="openProfile()">
+        VER PERFIL
+      </button>
+      @if (selectedPlayer.id !== currentUser?.id) {
+        <button class="action-btn secondary" (click)="startMessage()">
+          <ion-icon name="chatbubble"></ion-icon> MENSAJE
+        </button>
+        @if (sheetStats) {
+          <button class="action-btn vs" (click)="openVs()">
+            ⚔️ VS
+          </button>
+        }
+      }
+    </div>
+  </div>
+}
+
+<!-- F5 – Head-to-head VS -->
+@if (showVs && selectedPlayer) {
+  <div class="vs-overlay">
+    <div class="vs-modal">
+      <div class="vs-header">
+        <span class="vs-title">⚔️ HEAD-TO-HEAD</span>
+        <button class="vs-close" (click)="closeVs()">
+          <ion-icon name="close"></ion-icon>
+        </button>
+      </div>
+
+      <div class="vs-players">
+        <div class="vs-player me">
+          <img [src]="currentUser?.avatar" class="vs-avatar">
+          <span>TÚ</span>
+        </div>
+        <span class="vs-sep">VS</span>
+        <div class="vs-player them">
+          <img [src]="selectedPlayer.avatar" class="vs-avatar">
+          <span>{{ selectedPlayer.username }}</span>
+        </div>
+      </div>
+
+      @if (loadingVs) {
+        <div class="vs-loading">Cargando...</div>
+      }
+
+      @if (!loadingVs && myStats) {
+      <div class="vs-metrics">
+        @for (metric of vsMetrics(); track metric.label) {
+        <div class="vs-row">
+          <span class="vs-val mine" [class.winner]="metric.mine >= metric.theirs">
+            {{ metric.mine }}{{ metric.unit }}
+          </span>
+          <span class="vs-lbl">{{ metric.label }}</span>
+          <span class="vs-val theirs" [class.winner]="metric.theirs > metric.mine">
+            {{ metric.theirs }}{{ metric.unit }}
+          </span>
+        </div>
+        @let bars = vsBarWidth(metric.mine, metric.theirs);
+        <div class="vs-bar">
+          <div class="bar-mine" [style.width.%]="bars.my"></div>
+          <div class="bar-their" [style.width.%]="bars.their"></div>
+        </div>
+        }
+      </div>
+
+      @let ptsDiff = (selectedPlayer.points - (currentUser?.points ?? 0));
+      @if (ptsDiff > 0) {
+        <p class="vs-footer">Te saca {{ ptsDiff }} pts — ¡recórtalos en la próxima jornada!</p>
+      } @else if (ptsDiff < 0) {
+        <p class="vs-footer">¡Le llevas {{ -ptsDiff }} pts de ventaja!</p>
+      } @else {
+        <p class="vs-footer">¡Estáis igualados! Que gane el mejor.</p>
+      }
+      }
+
+    </div>
+  </div>
+}

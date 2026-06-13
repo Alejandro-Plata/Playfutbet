@@ -112,6 +112,7 @@ app.use('/api', require('./rutas/matches'));
 app.use('/api/bets', require('./rutas/bets'));
 app.use('/api/messages', require('./rutas/messages'));
 app.use('/api/notifications', require('./rutas/notifications'));
+app.use('/api/conversations', require('./rutas/conversations'));
 
 // --- HEALTH CHECK ---
 app.get('/', (_, res) => res.send('PlayFutBet API v2 running'));
