@@ -79,10 +79,20 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       client_id: this.GOOGLE_CLIENT_ID,
       callback: (response: any) => this.handleGoogleResponse(response),
     });
-    google.accounts.id.renderButton(
-      document.getElementById('google-btn-register'),
-      { theme: 'outline', size: 'large', text: 'signup_with', width: '100%' }
-    );
+    const hidden = document.getElementById('google-btn-hidden');
+    if (hidden) {
+      google.accounts.id.renderButton(hidden, { type: 'icon', size: 'large' });
+    }
+  }
+
+  registerWithGoogle() {
+    const hidden = document.getElementById('google-btn-hidden');
+    const btn = hidden?.querySelector('div[role=button]') as HTMLElement;
+    if (btn) {
+      btn.click();
+    } else {
+      google.accounts.id.prompt();
+    }
   }
 
   async handleGoogleResponse(response: any) {

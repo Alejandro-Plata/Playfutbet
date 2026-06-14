@@ -56,8 +56,8 @@ router.post('/register', limiteAuth, async (req, res) => {
 // POST /api/login
 router.post('/login', limiteAuth, async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+        const { username, password } = req.body;
+        const result = await db.query('SELECT * FROM users WHERE username = $1', [username]);
         const user = result.rows[0];
 
         if (!user) {

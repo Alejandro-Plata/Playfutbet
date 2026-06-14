@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   ) {
     addIcons({ arrowForward, logoGoogle });
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
@@ -54,12 +54,17 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   private loadGoogleGIS() {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => this.initGoogleButton();
-    document.head.appendChild(script);
+    const existing = document.querySelector('script[src*="accounts.google.com/gsi"]');
+    if (!existing) {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => this.initGoogleButton();
+      document.head.appendChild(script);
+    } else {
+      this.initGoogleButton();
+    }
   }
 
   private initGoogleButton() {
@@ -68,10 +73,20 @@ export class LoginComponent implements OnInit, AfterViewInit {
       client_id: this.GOOGLE_CLIENT_ID,
       callback: (response: any) => this.handleGoogleResponse(response),
     });
-    google.accounts.id.renderButton(
-      document.getElementById('google-btn-login'),
-      { theme: 'outline', size: 'large', text: 'signin_with', width: '100%' }
-    );
+    const hidden = document.getElementById('google-btn-hidden');
+    if (hidden) {
+      google.accounts.id.renderButton(hidden, { type: 'icon', size: 'large' });
+    }
+  }
+
+  loginWithGoogle() {
+    const hidden = document.getElementById('google-btn-hidden');
+    const btn = hidden?.querySelector('div[role=button]') as HTMLElement;
+    if (btn) {
+      btn.click();
+    } else {
+      google.accounts.id.prompt();
+    }
   }
 
   async handleGoogleResponse(response: any) {
@@ -89,13 +104,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   async onSubmit() {
     if (!this.loginForm.valid) return;
-    const { email, password } = this.loginForm.value;
+    const { username, password } = this.loginForm.value;
     this.loading = true;
     try {
-      await this.authService.login({ email, password });
+      await this.authService.login({ username, password });
       this.router.navigateByUrl(this.returnUrl);
     } catch (error: any) {
-      this.notificationService.showAlert(error.message || 'Error al iniciar sesión', 'error');
+      this.notificationService.showAlert(error.message || 'Error al iniciar sesion', 'error');
     } finally {
       this.loading = false;
     }
