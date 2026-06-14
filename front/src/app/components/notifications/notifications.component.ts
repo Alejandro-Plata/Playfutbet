@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NavigationStart, Router } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
 import { IonicModule } from "@ionic/angular";
 import { addIcons } from 'ionicons';
@@ -18,8 +19,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   alerts: Alert[] = [];
   private alertSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
-  constructor(private notificationService: NotificationService) {
+  constructor(
+    private notificationService: NotificationService,
+    private router: Router
+  ) {
     addIcons({ alertCircle, informationCircle, checkmarkCircle });
   }
 
@@ -34,11 +39,20 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         this.alerts = this.alerts.filter(a => a !== newAlert);
       }, 3000);
     });
+
+    this.routerSubscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.alerts = [];
+      }
+    });
   }
 
   ngOnDestroy() {
     if (this.alertSubscription) {
       this.alertSubscription.unsubscribe();
+    }
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
     }
   }
 }
