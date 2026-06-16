@@ -24,12 +24,10 @@ const ORIGENES_PERMITIDOS = [
     'http://localhost',
 ].filter(Boolean).map(u => u.replace(/\/+$/, ''));
 
-// Despliegues de preview de Vercel: https://playfutbet-<hash>-<scope>.vercel.app
 const REGEX_VERCEL_PREVIEW = /^https:\/\/playfutbet[a-z0-9-]*\.vercel\.app$/;
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Sin origin: peticiones server-side o Swagger UI local
         if (!origin) return callback(null, true);
         const limpio = origin.replace(/\/+$/, '');
         if (ORIGENES_PERMITIDOS.includes(limpio) || REGEX_VERCEL_PREVIEW.test(limpio)) {
