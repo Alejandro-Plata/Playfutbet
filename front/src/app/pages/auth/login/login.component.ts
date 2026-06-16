@@ -74,8 +74,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
   private initGoogleButton() {
     if (typeof google === 'undefined') return;
     google.accounts.id.initialize({
-      client_id: this.GOOGLE_CLIENT_ID,
+      client_id: this.GOOGLE_CLIENT_ID.trim(),
       callback: (response: any) => this.handleGoogleResponse(response),
+      use_fedcm_for_prompt: true,
     });
     const hidden = document.getElementById('google-btn-hidden');
     if (hidden) {

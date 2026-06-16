@@ -7,7 +7,8 @@ const db = require('../db');
 const { limiteAuth } = require('../middleware/rateLimits');
 
 const SECRET_KEY = process.env.JWT_SECRET;
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+// trim + quitar comillas accidentales: errores comunes al pegar la variable en Render
+const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim().replace(/^["']|["']$/g, '');
 
 const registerSchema = z.object({
     username: z.string().min(3).max(20),
@@ -138,8 +139,11 @@ router.post('/auth/google', limiteAuth, async (req, res) => {
             user: { id: user.id, username: user.username, email: user.email, points: user.points || 0, avatar: user.avatar }
         });
     } catch (error) {
-        console.error('Error en auth/google:', error);
-        res.status(401).json({ error: 'Token de Google inválido' });
+        // error.message de google-auth-library es descriptivo, p.ej.:
+        // "Wrong recipient, payload audience != requiredAudience" → el Client ID
+        // del front no coincide con GOOGLE_CLIENT_ID del backend.
+        console.error('Error en auth/google:', error.message);
+        res.status(401).json({ error: 'Token de Google inválido', details: error.message });
     }
 });
 
