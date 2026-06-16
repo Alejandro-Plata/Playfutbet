@@ -126,6 +126,7 @@ export interface Notification {
   userId: number;
   title: string;
   message: string;
+  read: boolean;
   createdAt: string;
 }
 

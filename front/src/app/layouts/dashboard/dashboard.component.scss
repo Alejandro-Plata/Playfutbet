@@ -280,28 +280,225 @@
     display: block;
 }
 
+/* ===== ELEMENTOS MÓVILES (ocultos en escritorio) ===== */
+.mobile-topbar,
+.bottom-nav {
+    display: none;
+}
+
+/* FAB volver arriba */
+.fab-scroll-top {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    width: 52px;
+    height: 52px;
+    background: var(--c-yellow);
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 80;
+    transition: transform 0.12s, box-shadow 0.12s;
+    animation: fabIn 0.2s ease-out;
+
+    ion-icon {
+        font-size: 1.5rem;
+        color: #000;
+    }
+
+    &:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #000;
+    }
+
+    &:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #000;
+    }
+}
+
+@keyframes fabIn {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== ADAPTACIÓN MÓVIL ===== */
 @media (max-width: 900px) {
-    .layout-wrapper {
-        flex-direction: column;
-    }
 
-    .sidebar {
-        width: 100%;
-        height: auto;
-        flex-direction: row;
-        align-items: center;
-        padding: 1rem;
-        border-right: none;
-        border-bottom: 1px solid #333;
-    }
-
-    .nav-menu,
-    .logout-section {
+    /* Ocultar el chrome de escritorio */
+    .sidebar,
+    .top-header {
         display: none;
     }
 
-    .user-profile {
-        border: none;
-        padding: 0;
+    .main-content {
+        height: 100vh;
+    }
+
+    /* --- Top bar móvil (sticky) --- */
+    .mobile-topbar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        height: 60px;
+        flex-shrink: 0;
+        padding: 0 1rem;
+        padding-top: env(safe-area-inset-top);
+        height: calc(60px + env(safe-area-inset-top));
+        background: #fff;
+        border-bottom: 3px solid #000;
+        z-index: 90;
+    }
+
+    .mt-avatar {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #000;
+        box-shadow: 2px 2px 0 #000;
+        flex-shrink: 0;
+        overflow: hidden;
+        display: block;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .mt-title {
+        flex: 1;
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        color: #000;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mt-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-shrink: 0;
+    }
+
+    .mt-logout {
+        background: #fff;
+        border: 2px solid #000;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 3px 3px 0 #000;
+
+        ion-icon { font-size: 1.4rem; color: #000; }
+        &:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+    }
+
+    /* --- Contenido: dejar hueco para la bottom-nav --- */
+    .content-scroll {
+        padding: 1rem;
+        padding-bottom: calc(80px + env(safe-area-inset-bottom));
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Vista de chat a pantalla completa: sin hueco de bottom-nav */
+    .content-scroll.full-bleed {
+        padding: 0 0.75rem;
+        padding-bottom: env(safe-area-inset-bottom);
+        overflow: hidden;
+    }
+
+    /* --- FAB por encima de la bottom-nav --- */
+    .fab-scroll-top {
+        bottom: calc(80px + env(safe-area-inset-bottom));
+        right: 1rem;
+        width: 48px;
+        height: 48px;
+    }
+
+    /* --- Bottom navigation (fija) --- */
+    .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        padding-bottom: env(safe-area-inset-bottom);
+        height: calc(64px + env(safe-area-inset-bottom));
+        background: #fff;
+        border-top: 3px solid #000;
+        z-index: 100;
+    }
+
+    .bn-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        text-decoration: none;
+        color: #888;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        transition: color 0.15s;
+        position: relative;
+        padding-top: 6px;
+
+        ion-icon {
+            font-size: 1.5rem;
+        }
+
+        &.active {
+            color: #000;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 28px;
+                height: 4px;
+                background: var(--c-yellow);
+                border: 2px solid #000;
+                border-top: none;
+            }
+        }
+    }
+
+    .bn-icon-wrap {
+        position: relative;
+        display: flex;
+    }
+
+    .bn-badge {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background: #dc2626;
+        color: #fff;
+        font-size: 0.55rem;
+        font-weight: 900;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 3px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid #fff;
     }
 }

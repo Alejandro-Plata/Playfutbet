@@ -1,0 +1,46 @@
+<div class="bell-wrapper">
+  <button class="bell-btn" (click)="toggle()" [class.active]="open" aria-label="Notificaciones">
+    <ion-icon [name]="unread > 0 ? 'notifications' : 'notifications-outline'"></ion-icon>
+    @if (unread > 0) {
+      <span class="bell-badge">{{ unread > 99 ? '99+' : unread }}</span>
+    }
+  </button>
+
+  @if (open) {
+    <div class="bell-panel">
+      <div class="panel-head">
+        <h4>NOTIFICACIONES</h4>
+        @if (unread > 0) {
+          <button class="mark-all" (click)="markAllRead()">
+            <ion-icon name="checkmark-done"></ion-icon> Marcar todo
+          </button>
+        }
+      </div>
+
+      <div class="panel-body">
+        @if (loading) {
+          <div class="panel-empty">Cargando…</div>
+        } @else if (items.length === 0) {
+          <div class="panel-empty">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <p>No tienes notificaciones</p>
+          </div>
+        } @else {
+          @for (item of items; track item.id) {
+            <div class="notif-row" [class.unread]="!item.read" (click)="onItemClick(item)">
+              @if (!item.read) { <span class="unread-dot"></span> }
+              <div class="notif-text">
+                <span class="notif-title">{{ item.title }}</span>
+                <span class="notif-msg">{{ item.message }}</span>
+                <span class="notif-time">{{ timeAgo(item.createdAt) }}</span>
+              </div>
+              <button class="notif-del" (click)="remove(item, $event)" aria-label="Eliminar">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+</div>

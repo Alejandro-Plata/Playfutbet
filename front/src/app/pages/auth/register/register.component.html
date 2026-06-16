@@ -5,6 +5,7 @@
 
   <!-- Boton personalizado de Google -->
   <div id="google-btn-hidden" style="position: absolute; opacity: 0; pointer-events: none; height: 0; overflow: hidden;"></div>
+  @if (showGoogle) {
   <button type="button" class="google-btn" (click)="registerWithGoogle()" [disabled]="googleLoading">
     @if (googleLoading) {
       <span class="spinner"></span> CONECTANDO…
@@ -20,6 +21,7 @@
   </button>
 
   <div class="divider"><span>o con email</span></div>
+  }
 
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="input-group">

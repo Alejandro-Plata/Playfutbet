@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { grid, trophy, barChart, person, time, logOut, search, notifications, football, chatbubbles } from 'ionicons/icons';
+import { grid, trophy, barChart, person, time, logOut, search, notifications, football, chatbubbles, arrowUp } from 'ionicons/icons';
 import { NotificationsComponent } from '../../components/notifications/notifications.component';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
 import { User } from '../../types/types';
 import { AuthService } from '../../services/auth-service';
 import { ConversationService } from '../../services/conversation.service';
@@ -13,13 +14,16 @@ import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, IonIcon, NotificationsComponent],
+  imports: [CommonModule, RouterModule, IonIcon, NotificationsComponent, NotificationBellComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   pageTitle: string = 'PANEL DE CONTROL';
+  showScrollTop = false;
+  /** Vista de chat a pantalla completa: oculta la bottom-nav en móvil */
+  fullBleed = false;
   private pollTimer: any;
 
   constructor(
@@ -27,7 +31,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     public convService: ConversationService,
   ) {
-    addIcons({ grid, trophy, barChart, person, time, logOut, search, notifications, football, chatbubbles });
+    addIcons({ grid, trophy, barChart, person, time, logOut, search, notifications, football, chatbubbles, arrowUp });
+  }
+
+  onContentScroll(el: HTMLElement) {
+    this.showScrollTop = el.scrollTop > 300;
+  }
+
+  scrollToTop(el: HTMLElement) {
+    el.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   updateTitle(url: string) {
@@ -41,6 +53,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     else if (url.includes('/messages')) this.pageTitle = 'MENSAJES';
     else if (url.includes('/user')) this.pageTitle = 'PERFIL DE JUGADOR';
     else this.pageTitle = 'PANEL DE CONTROL';
+
+    // Vista de conversación individual (/messages/:id): chat a pantalla completa
+    this.fullBleed = /\/messages\/\d+/.test(url);
   }
 
   async ngOnInit() {

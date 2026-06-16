@@ -35,6 +35,10 @@ export class RegisterComponent implements OnInit, AfterViewInit {
 
   private readonly GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
 
+  get showGoogle(): boolean {
+    return !!this.GOOGLE_CLIENT_ID && !this.authService.isNative();
+  }
+
   constructor(
     private fb: FormBuilder,
     private router: Router,

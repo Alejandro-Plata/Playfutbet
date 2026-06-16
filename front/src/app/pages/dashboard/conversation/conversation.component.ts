@@ -73,6 +73,13 @@ import { PrivateMessage } from '../../../types/types';
       max-width: 700px; margin: 0 auto;
     }
 
+    @media (max-width: 900px) {
+      .conv-container {
+        height: calc(100dvh - 60px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        max-width: 100%;
+      }
+    }
+
     .conv-header {
       display: flex; align-items: center; gap: 0.75rem;
       padding: 1rem 0; border-bottom: 3px solid #000;

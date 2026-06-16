@@ -55,9 +55,10 @@ async function initDb() {
                 id SERIAL PRIMARY KEY,
                 username TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
+                password TEXT,
                 points INTEGER DEFAULT 0,
-                avatar TEXT
+                avatar TEXT,
+                google_id TEXT UNIQUE
             )
         `);
         console.log("- Tabla 'users' lista.");

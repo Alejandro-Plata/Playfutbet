@@ -28,6 +28,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   private returnUrl = '/dashboard/panel';
 
+  get showGoogle(): boolean {
+    return !!this.GOOGLE_CLIENT_ID && !this.authService.isNative();
+  }
+
   constructor(
     private fb: FormBuilder,
     private router: Router,

@@ -679,9 +679,21 @@ class SimulationEngine {
             );
         }
 
-        // Limpiar partidos anteriores
+        // Limpiar partidos anteriores.
+        // bets.match_id y messages.match_id tienen FK a matches(id) sin ON DELETE
+        // CASCADE: hay que borrar primero las filas dependientes o el DELETE FROM
+        // matches falla por violación de clave foránea y la nueva temporada nunca
+        // arranca (la liga se queda congelada en la jornada 38).
+        // Además, los partidos nuevos reutilizan los mismos IDs (1..380), así que
+        // conservar las apuestas viejas provocaría que se resolvieran de nuevo y se
+        // dieran puntos por duplicado. Los puntos totales (users.points) se mantienen;
+        // solo se reinicia el historial de apuestas/chat de la temporada.
+        await db.query('DELETE FROM bets');
+        await db.query('DELETE FROM messages');
         await db.query('DELETE FROM matches');
         this.allMatches = [];
+        this.db.bets = [];
+        this.db.messages = [];
 
         this.state.season = newSeason;
         this.state.offSeason = false;
