@@ -42,7 +42,7 @@ class SimulationEngine {
         const now = Date.now();
         let elapsed = now - this.state.lastJornadaStart;
 
-        while (elapsed >= this.jornadaInterval && this.state.currentJornada < 38) {
+        while (elapsed >= this.jornadaInterval && this.state.currentJornada <= 38 && !this.state.offSeason) {
             console.log(`[Sim] Catch-up: Avanzando de Jornada ${this.state.currentJornada}...`);
             await this.advanceJornada();
             elapsed = now - this.state.lastJornadaStart;
@@ -574,7 +574,11 @@ class SimulationEngine {
 
         if (this.state.currentJornada < 38) {
             this.state.currentJornada++;
-            this.state.lastJornadaStart = Date.now();
+            // Avanzar exactamente un intervalo (no Date.now()): así los bucles de
+            // catch-up/tick pueden recuperar VARIAS jornadas de una vez tras un
+            // apagado, y lastJornadaStart se mantiene alineado con el horario fijo
+            // de los partidos generado en generateSchedule().
+            this.state.lastJornadaStart += this.jornadaInterval;
             this.setupCurrentJornadaMatches();
 
             // Aviso de última jornada
