@@ -1,0 +1,204 @@
+<ion-content [fullscreen]="true">
+  <div class="landing">
+
+    <!-- ===== BARRA SUPERIOR ===== -->
+    <header class="bar">
+      <a class="logo" routerLink="/" aria-label="PlayFutBet, inicio">PLAY<span>FUT</span>BET</a>
+      <nav class="bar-actions" aria-label="Cuenta">
+        @if (isLoggedIn) {
+        <a class="btn btn-yellow" routerLink="/dashboard">Ir al panel</a>
+        } @else {
+        <a class="btn btn-white" routerLink="/login">Entrar</a>
+        <a class="btn btn-yellow" routerLink="/register">Crear cuenta</a>
+        }
+      </nav>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" aria-labelledby="t-hero">
+      <div class="grid-bg" aria-hidden="true"></div>
+
+      <div class="hero-copy">
+        <p class="kicker rise" style="--d: 0ms">La Liga · 38 jornadas · 20 equipos</p>
+        <h1 id="t-hero">
+          <span class="line rise" style="--d: 80ms">Predice.</span>
+          <span class="line rise" style="--d: 180ms"><em>Acierta.</em></span>
+          <span class="line rise outline" style="--d: 280ms">Sube.</span>
+        </h1>
+        <p class="lead rise" style="--d: 400ms">
+          Adivina el marcador de cada partido, suma puntos y escala en el ranking.
+          10 puntos por resultado exacto, 5 por acertar el ganador.
+        </p>
+        <div class="cta rise" style="--d: 520ms">
+          @if (isLoggedIn) {
+          <a class="btn btn-yellow btn-lg" routerLink="/dashboard">Ir al panel <ion-icon name="arrow-forward"></ion-icon></a>
+          } @else {
+          <a class="btn btn-yellow btn-lg" routerLink="/register">Crear cuenta gratis <ion-icon name="arrow-forward"></ion-icon></a>
+          <a class="btn btn-white btn-lg" routerLink="/login">Iniciar sesión</a>
+          }
+        </div>
+      </div>
+
+      <!-- Boleto de ejemplo con balón botando -->
+      <div class="ticket-wrap rise" style="--d: 300ms" aria-hidden="true">
+        <div class="ticket">
+          <div class="ticket-head"><span>Jornada 12</span><span class="live">● En juego</span></div>
+          <div class="ticket-match">
+            <div class="side"><img [src]="getTeamLogo('Real Madrid')" alt=""><b>Real Madrid</b></div>
+            <div class="score"><span>2</span><i>-</i><span>1</span></div>
+            <div class="side"><img [src]="getTeamLogo('FC Barcelona')" alt=""><b>FC Barcelona</b></div>
+          </div>
+          <div class="ticket-foot"><span>Tu predicción</span><b>2 - 1</b></div>
+          <div class="sticker">+10<small>PTS</small></div>
+        </div>
+        <div class="ball">
+          <svg viewBox="0 0 100 100" width="84" height="84">
+            <circle cx="50" cy="50" r="46" fill="#fff" stroke="#000" stroke-width="6" />
+            <polygon points="50,28 68,41 61,62 39,62 32,41" fill="#000" />
+            <path d="M50 28V6M68 41l22-8M61 62l14 18M39 62L25 80M32 41L10 33" stroke="#000" stroke-width="5" fill="none" />
+          </svg>
+        </div>
+        <div class="ball-shadow"></div>
+      </div>
+    </section>
+
+    <!-- ===== CINTA DE ESCUDOS ===== -->
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        @for (round of [1, 2]; track round) {
+        <div class="ticker-set">
+          @for (team of teams; track team) {
+          <span class="ticker-item"><img [src]="getTeamLogo(team)" alt=""><b>{{ team }}</b></span>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- ===== CIFRAS ===== -->
+    <section class="stats" aria-label="La temporada en cifras">
+      <div class="stat" data-reveal>
+        <b data-count="38">0</b><span>Jornadas</span>
+      </div>
+      <div class="stat" data-reveal style="--d: 100ms">
+        <b data-count="20">0</b><span>Equipos</span>
+      </div>
+      <div class="stat" data-reveal style="--d: 200ms">
+        <b data-count="380">0</b><span>Partidos</span>
+      </div>
+    </section>
+
+    <!-- ===== CÓMO FUNCIONA ===== -->
+    <section class="how" aria-labelledby="t-how">
+      <h2 id="t-how" data-reveal>Cómo funciona</h2>
+      <ol class="steps">
+        <li data-reveal>
+          <span class="num">1</span>
+          <h3>Elige un partido</h3>
+          <p>Cada jornada trae sus partidos de La Liga. Ábrelos y mira cómo llegan los equipos.</p>
+        </li>
+        <li data-reveal style="--d: 120ms">
+          <span class="num">2</span>
+          <h3>Pon tu marcador</h3>
+          <p>Predice los goles del local y del visitante antes de que empiece.</p>
+        </li>
+        <li data-reveal style="--d: 240ms">
+          <span class="num">3</span>
+          <h3>Suma puntos</h3>
+          <p>Cuando termina el partido se reparten los puntos y subes en el ranking.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ===== PRUÉBALO ===== -->
+    <section class="try" aria-labelledby="t-try">
+      <div class="try-copy" data-reveal>
+        <h2 id="t-try">Pruébalo ahora</h2>
+        <p>Pon tu marcador y simula el partido para ver cuántos puntos te llevarías.</p>
+      </div>
+
+      <div class="try-card" data-reveal style="--d: 120ms">
+        <div class="try-teams">
+          <div class="side"><img [src]="getTeamLogo(home)" [alt]="home"><b>{{ home }}</b></div>
+          <span class="vs">VS</span>
+          <div class="side"><img [src]="getTeamLogo(away)" [alt]="away"><b>{{ away }}</b></div>
+        </div>
+
+        <div class="guess" role="group" aria-label="Tu predicción">
+          <div class="stepper">
+            <button type="button" (click)="step('home', -1)" aria-label="Un gol menos al local">−</button>
+            <output>{{ guess.home }}</output>
+            <button type="button" (click)="step('home', 1)" aria-label="Un gol más al local">+</button>
+          </div>
+          <span class="dash">:</span>
+          <div class="stepper">
+            <button type="button" (click)="step('away', -1)" aria-label="Un gol menos al visitante">−</button>
+            <output>{{ guess.away }}</output>
+            <button type="button" (click)="step('away', 1)" aria-label="Un gol más al visitante">+</button>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-yellow btn-block" (click)="simulate()" [disabled]="simulating">
+          <ion-icon name="football"></ion-icon> {{ simulating ? 'Jugando…' : 'Simular partido' }}
+        </button>
+
+        @if (real) {
+        <div class="result" [class.win]="points === 10" [class.half]="points === 5" [class.lose]="points === 0" aria-live="polite">
+          <div class="real"><span>Resultado</span><b>{{ real.home }} - {{ real.away }}</b></div>
+          @if (points !== null) {
+          <div class="earned"><b>+{{ points }}</b><span>{{ verdict }}</span></div>
+          }
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- ===== FUNCIONES ===== -->
+    <section class="features" aria-labelledby="t-feat">
+      <h2 id="t-feat" data-reveal>Y mucho más</h2>
+      <div class="fgrid">
+        <article class="fcard" data-reveal>
+          <ion-icon name="trophy"></ion-icon>
+          <h3>Clasificación y goleadores</h3>
+          <p>La tabla de La Liga al día, con los máximos goleadores y la plantilla de cada equipo.</p>
+        </article>
+        <article class="fcard" data-reveal style="--d: 100ms">
+          <ion-icon name="bar-chart"></ion-icon>
+          <h3>Ranking global</h3>
+          <p>Compara tus puntos con los de todos los jugadores, por temporada o en total.</p>
+        </article>
+        <article class="fcard" data-reveal style="--d: 200ms">
+          <ion-icon name="chatbubbles"></ion-icon>
+          <h3>Chat en directo</h3>
+          <p>Comenta cada partido mientras se juega y habla en privado con otros jugadores.</p>
+        </article>
+        <article class="fcard" data-reveal style="--d: 300ms">
+          <ion-icon name="notifications"></ion-icon>
+          <h3>Avisos al momento</h3>
+          <p>Te avisamos cuando ganas una apuesta y cuando termina la temporada.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== LLAMADA FINAL ===== -->
+    <section class="final" aria-labelledby="t-final">
+      <div class="final-in" data-reveal>
+        <h2 id="t-final">{{ isLoggedIn ? 'Tu jornada te espera' : 'Empieza a predecir' }}</h2>
+        <div class="cta">
+          @if (isLoggedIn) {
+          <a class="btn btn-black btn-lg" routerLink="/dashboard">Ir al panel <ion-icon name="arrow-forward"></ion-icon></a>
+          } @else {
+          <a class="btn btn-black btn-lg" routerLink="/register">Crear cuenta gratis <ion-icon name="arrow-forward"></ion-icon></a>
+          <a class="btn btn-white btn-lg" routerLink="/login">Iniciar sesión</a>
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <a class="logo" routerLink="/">PLAY<span>FUT</span>BET</a>
+      <p>Proyecto de portfolio de Alejandro Plata Cortés. Simulación de La Liga: no se apuesta dinero.</p>
+      <a href="https://github.com/Alejandro-Plata/Playfutbet" target="_blank" rel="noopener">GitHub</a>
+    </footer>
+  </div>
+</ion-content>
