@@ -23,6 +23,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
   animate = false;
   loading = false;
   googleLoading = false;
+  /** 'popup': esperando a que el usuario elija cuenta; 'servidor': verificando con el backend. */
+  googleFase: 'popup' | 'servidor' = 'popup';
+  private googleTimer?: ReturnType<typeof setTimeout>;
 
   private readonly GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
 
@@ -85,6 +88,18 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   loginWithGoogle() {
+    this.googleFase = 'popup';
+    this.googleLoading = true;
+    // Si el usuario cierra la ventana de Google sin elegir cuenta, no hay callback: lo recuperamos al volver el foco.
+    clearTimeout(this.googleTimer);
+    this.googleTimer = setTimeout(() => this.cancelarGoogle(), 90_000);
+    window.addEventListener('focus', this.alVolverElFoco);
+
+    if (typeof google === 'undefined') {
+      // El script de Google aún se está descargando: reintentamos en cuanto esté
+      this.esperarGoogle();
+      return;
+    }
     const hidden = document.getElementById('google-btn-hidden');
     const btn = hidden?.querySelector('div[role=button]') as HTMLElement;
     if (btn) {
@@ -94,8 +109,37 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private esperarGoogle(intentos = 0) {
+    if (!this.googleLoading) return;
+    if (typeof google !== 'undefined') {
+      this.initGoogleButton();
+      this.loginWithGoogle();
+      return;
+    }
+    if (intentos > 40) {
+      this.cancelarGoogle();
+      this.notificationService.showAlert('No se pudo cargar Google. Revisa tu conexión o el bloqueador de anuncios.', 'error');
+      return;
+    }
+    setTimeout(() => this.esperarGoogle(intentos + 1), 250);
+  }
+
+  private alVolverElFoco = () => {
+    // Margen para que, si el usuario sí eligió cuenta, llegue el callback antes de cancelar
+    setTimeout(() => { if (this.googleFase === 'popup') this.cancelarGoogle(); }, 1500);
+  };
+
+  private cancelarGoogle() {
+    clearTimeout(this.googleTimer);
+    window.removeEventListener('focus', this.alVolverElFoco);
+    if (this.googleFase === 'popup') this.googleLoading = false;
+  }
+
   async handleGoogleResponse(response: any) {
     if (!response.credential) return;
+    clearTimeout(this.googleTimer);
+    window.removeEventListener('focus', this.alVolverElFoco);
+    this.googleFase = 'servidor';
     this.googleLoading = true;
     try {
       await this.authService.loginWithGoogle(response.credential);

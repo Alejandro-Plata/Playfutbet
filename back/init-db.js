@@ -158,6 +158,7 @@ async function initDb() {
                 user_id INTEGER REFERENCES users(id),
                 title TEXT NOT NULL,
                 message TEXT NOT NULL,
+                read BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
             )
         `);

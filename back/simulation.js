@@ -22,6 +22,9 @@ class SimulationEngine {
     }
     
     async init() {
+        // Las rutas de notificaciones consultan la columna `read`; si la BD de producción se creó
+        // antes de que existiera, todas las consultas fallaban con 500 y la campana quedaba vacía.
+        await db.query('ALTER TABLE notifications ADD COLUMN IF NOT EXISTS read BOOLEAN DEFAULT FALSE');
         await this.loadData();
         // Catch-up logic: Si el servidor estuvo apagado, avanzamos el tiempo
         await this.catchUp();
