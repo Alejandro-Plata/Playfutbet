@@ -7,24 +7,28 @@ export const routes: Routes = [
     pathMatch: 'full',
     loadComponent: () => import('./pages/landing-page/landing-page.component').then((m) => m.LandingPageComponent),
   },
+  // Login y registro comparten el marco AuthComponent, pero cada uno cuelga de su propia ruta
+  // ('login' / 'register'). Con un grupo de ruta vacía ('') Ionic confundía su vista con la de
+  // la landing (también '') y, al navegar, seguía mostrando la landing.
   {
-    path: '',
+    path: 'login',
     loadComponent: () => import('./pages/auth/auth/auth.component').then((m) => m.AuthComponent),
     children: [
       {
-        path: 'login',
+        path: '',
         loadComponent: () => import('./pages/auth/login/login.component').then((m) => m.LoginComponent),
       },
-      {
-        path: 'register',
-        loadComponent: () => import('./pages/auth/register/register.component').then((m) => m.RegisterComponent),
-      },
+    ],
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/auth/auth/auth.component').then((m) => m.AuthComponent),
+    children: [
       {
         path: '',
-        redirectTo: 'login',
-        pathMatch: 'full',
-      }
-    ]
+        loadComponent: () => import('./pages/auth/register/register.component').then((m) => m.RegisterComponent),
+      },
+    ],
   },
   {
     path: 'dashboard',

@@ -6,10 +6,10 @@
 </p>
 
 <p align="center">
-  <a href="https://playfutbet.vercel.app/login"><b>🌐 Demo</b></a> ·
-  <a href="https://playfutbet-back.onrender.com/api-docs"><b>📘 Swagger UI</b></a> ·
-  <a href="#-capturas">Capturas</a> ·
-  <a href="#-arranque-local">Arranque local</a>
+  <a href="https://playfutbet.vercel.app/login"><b>Demo</b></a> ·
+  <a href="https://playfutbet-back.onrender.com/api-docs"><b>Swagger UI</b></a> ·
+  <a href="#capturas">Capturas</a> ·
+  <a href="#arranque-local">Arranque local</a>
 </p>
 
 <p align="center">
@@ -32,19 +32,19 @@
 
 > El backend corre en el plan gratuito de Render y se duerme tras 15 minutos sin tráfico: la primera petición puede tardar hasta un minuto.
 
-## ✨ Qué hace
+## Qué hace
 
 | | |
 |---|---|
-| 🎯 **Predicciones** | Adivina el marcador de cada partido: **10 puntos** por resultado exacto y **5** por acertar ganador o empate. Historial con seguimiento de aciertos |
-| ⚽ **Liga simulada** | Temporada de 380 partidos con progresión en directo, eventos minuto a minuto (goles y tarjetas según la fuerza de cada equipo) y avance automático de jornadas, con recuperación si el servidor se cae |
-| 🏆 **Clasificación y estadísticas** | Tabla con puntos, goles y victorias/empates/derrotas, goleadores, plantillas y estadísticas por equipo |
-| 👥 **Social** | Ranking global y por temporada, perfiles con avatar, mensajería privada y chat en directo durante los partidos |
-| 🔔 **Notificaciones** | Apuesta ganada, hitos de temporada y ranking final |
-| 🔐 **Acceso** | Registro e inicio de sesión con usuario y contraseña o con Google, sesión con JWT |
-| 📱 **Móvil** | La misma app como aplicación Android con Capacitor |
+| **Predicciones** | Adivina el marcador de cada partido: **10 puntos** por resultado exacto y **5** por acertar ganador o empate. Historial con seguimiento de aciertos |
+| **Liga simulada** | Temporada de 380 partidos con progresión en directo, eventos minuto a minuto (goles y tarjetas según la fuerza de cada equipo) y avance automático de jornadas, con recuperación si el servidor se cae |
+| **Clasificación y estadísticas** | Tabla con puntos, goles y victorias/empates/derrotas, goleadores, plantillas y estadísticas por equipo |
+| **Social** | Ranking global y por temporada, perfiles con avatar, mensajería privada y chat en directo durante los partidos |
+| **Notificaciones** | Apuesta ganada, hitos de temporada y ranking final |
+| **Acceso** | Registro e inicio de sesión con usuario y contraseña o con Google, sesión con JWT |
+| **Móvil** | La misma app como aplicación Android con Capacitor |
 
-## 📸 Capturas
+## Capturas
 
 <table>
 <tr><td align="center"><img src="docs/screenshots/landing-demo.jpg" alt="Landing: prueba tu predicción" width="440"><br><sub><b>Landing: prueba tu predicción</b></sub></td><td align="center"><img src="docs/screenshots/panel.jpg" alt="Panel con tus predicciones" width="440"><br><sub><b>Panel con tus predicciones</b></sub></td></tr>
@@ -52,7 +52,7 @@
 <tr><td align="center"><img src="docs/screenshots/partido.jpg" alt="Detalle del partido con chat" width="440"><br><sub><b>Detalle del partido con chat</b></sub></td><td align="center"><img src="docs/screenshots/ranking.jpg" alt="Ranking de jugadores" width="440"><br><sub><b>Ranking de jugadores</b></sub></td></tr>
 </table>
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
 ┌───────────────────┐   HTTP + JWT   ┌───────────────────┐   pg   ┌────────────┐
@@ -70,7 +70,7 @@
 | Documentación | Swagger / OpenAPI en `/api-docs` |
 | Despliegue | Vercel (front) · Render (back) |
 
-## 🔌 API
+## API
 
 | Prefijo | Descripción |
 |---|---|
@@ -88,7 +88,7 @@
 
 La documentación completa está en [`/api-docs`](https://playfutbet-back.onrender.com/api-docs).
 
-## 🚀 Arranque local
+## Arranque local
 Necesitas Node.js 20+, PostgreSQL y (opcional) el CLI de Ionic (`npm i -g @ionic/cli`).
 
 ```bash
@@ -105,7 +105,7 @@ npm install
 ionic serve        # o: npm start
 ```
 
-## 📁 Estructura
+## Estructura
 ```
 PlayFutBet/
 ├── front/                 # Cliente Ionic + Angular
